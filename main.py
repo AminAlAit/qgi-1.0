@@ -15,7 +15,7 @@ patternsShowcasePath = "allSortedPatternsDiffShowcase.pkl"
 
 st.write("""# Trojan Geopolitics""")
 
-patterns                 = tr.openPickle(patternsPath)
+#patterns                 = tr.openPickle(patternsPath)
 patternsShowcase         = tr.openPickle(patternsShowcasePath) #dp.filterSortedPatternDict(sortedPatternsDict = patterns, corrScore = 0.9, pattLength = 6, onlyDifferentPattIndexStarts = True)
 lists                    = tr.getShowcaseCountryNamesLists()
 patternCountriesShowcase = lists["patternCountriesShowcase"]

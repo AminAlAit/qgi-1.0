@@ -3,10 +3,10 @@ import subprocess
 import pickle
 import sys
 
-patternCountries         = r"/workspace/qgi\trojan\showcase\patternCountries.csv"
-matchCountries           = r"/workspace/qgi\trojan\showcase\matchCountries.csv"
-patternCountriesShowcase = r"/workspace/qgi\trojan\showcase\patternCountriesShowcase.csv"
-matchCountriesShowcase   = r"/workspace/qgi\trojan\showcase\matchCountriesShowcase.csv"
+#patternCountries         = "/workspace/qgi\trojan\showcase\patternCountries.csv"
+#matchCountries           = r"/workspace/qgi\trojan\showcase\matchCountries.csv"
+patternCountriesShowcase = "patternCountriesShowcase.csv"
+matchCountriesShowcase   = "matchCountriesShowcase.csv"
 
 def install(packages):
     if isinstance(packages, list):

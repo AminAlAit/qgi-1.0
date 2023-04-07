@@ -7,7 +7,7 @@ import dataPrep         as dp
 import pandas           as pd
 import numpy            as np
 import pickle
-import viz
+#import viz
 import os
 
 countriesFolderPath   = "/workspace/qgi\\trojan\\countries patterns\\"

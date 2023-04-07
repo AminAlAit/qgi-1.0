@@ -1,7 +1,7 @@
-from dtaidistance import dtw
+#from dtaidistance import dtw
 import dataPrep as dp
 import numpy    as np
-import bz2
+#import bz2
 
 #def calc_correlation(actual, predic):
 #    a_diff = actual - np.mean(actual)

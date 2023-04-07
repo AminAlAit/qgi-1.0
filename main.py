@@ -10,8 +10,8 @@ import re
 ### cd trojan-streamlit
 ### python -m streamlit run main.py
 
-patternsPath         = r"/workspace/qgi\trojan\countries patterns\allSortedPatterns.pickle"
-patternsShowcasePath = r"/workspace/qgi\trojan\showcase\allSortedPatternsDiffShowcase.pkl"
+patternsPath         = "allSortedPatterns.pickle"
+patternsShowcasePath = "allSortedPatternsDiffShowcase.pkl"
 
 st.write("""# Trojan Geopolitics""")
 

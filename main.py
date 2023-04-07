@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(1, r"/workspace/qgi\trojan\data engine")
 import dataPrep  as dp
 import trojan    as tr
 tr.install(["yfinance", "streamlit"])

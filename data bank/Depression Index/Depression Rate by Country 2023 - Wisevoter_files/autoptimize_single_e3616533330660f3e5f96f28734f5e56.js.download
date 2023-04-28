@@ -1,0 +1,518 @@
+async function plotUSQuantMap(vizWrapper,dataImport){let colorScheme=["#c4dee7","#91c0cf","#65a2b7","#307a93","#1e637a"]
+const[stateShapes,alaskaShape,hawaiiShape]=await readJsonList(sdbJsonPaths)
+const stateNameAccessor=d=>d.properties['NAME']
+let years=getAvailableYears(dataImport)
+years=years.sort((a,b)=>a-b)
+let yearlyData=false;if(years.length>1){yearlyData=true}
+let latestYear=Math.max(...years)
+let latestData=dataImport.filter(row=>parseFloat(row.data_year)===latestYear)
+let previousYear=false;let previousYearData=false;let percentageChangeCalc=false;if(yearlyData){let latestYearIndex=years.indexOf(latestYear)
+previousYear=years[latestYearIndex-1]
+previousYearData=dataImport.filter(row=>parseFloat(row.data_year)===previousYear)
+percentageChangeCalc=latestData.map(row=>{let currentGeo=row.geo_name
+let latestValue=parseFloat(row.data)
+let previousYearRow=previousYearData.filter(row=>{return row.geo_name===currentGeo})
+if(previousYearRow.length>0){let previousValue=parseFloat(previousYearRow[0].data)
+let changeValue=percentageChange(previousValue,latestValue)
+return{[currentGeo]:changeValue}}})}
+let dataObj=generateMainMapObj([latestData])
+const metricName=Object.keys(dataObj)[0]
+const metricData=dataObj[metricName][0]
+const metricType=dataObj[metricName][1].dataType
+const sortOrder=dataObj[metricName][2].sortOrder
+let metricUnit;if(dataImport[0].metric_unit===undefined){metricUnit=""}else{metricUnit=dataImport[0].metric_unit}
+let dimensions=new drawDimensions(924,650,10,10,20,10)
+const mapContainer=vizWrapper.append('div').attr('class','map-plot-container left-side-container')
+const mapWrapper=mapContainer.append('svg').attr("viewBox",`0 0 100 65`).attr('height',dimensions.height).attr('width',dimensions.width).attr('preserveAspectRatio','xMinYMin')
+const bounds=await createBounds(mapWrapper,15,14,'map-bound')
+const alaskaBounds=await createBounds(mapWrapper,-100,10,'alaska-bound')
+const hawaiiBounds=await createBounds(mapWrapper,237,28,'hawaii-bound')
+function createPathGenerator(scale){let proj=d3.geoMercator().translate([185,80]).scale([scale])
+let generator=d3.geoPath().projection(proj)
+return generator}
+let pathGenerator=createPathGenerator(90)
+let alaskaPathGenerator=createPathGenerator(25)
+let hawaiiPathGenerator=createPathGenerator(140)
+let metricValues=Object.values(metricData)
+let[metricMin,metricMax]=d3.extent(metricValues)
+let colorScale=createQuantMapColorScale(metricMin,metricMax,colorScheme)
+function fillColor(d,values,scale){const metricValue=values[stateNameAccessor(d)]
+if(typeof metricValue=="undefined"||isNaN(metricValue))return"#e6e6e6"
+return scale(metricValue)}
+function appendGeotoCanvas(bound,geojson,generator){let paths=bound.selectAll('.node').data(geojson.features).enter().append('svg:a').attr('class','map-accordion-link').attr('xlink:href',d=>{if(window.innerWidth>600){return`#${
+stateNameAccessor(d).replaceAll("'",'').replaceAll(' ','-').toLowerCase()
+}`}}).append('svg:path').attr('class','map-states').attr('id',d=>"map-"+stateNameAccessor(d).replaceAll(' ','-')).attr('d',generator).style('fill',d=>fillColor(d,metricData,colorScale))
+return paths}
+let states=appendGeotoCanvas(bounds,stateShapes,pathGenerator)
+let alaska=appendGeotoCanvas(alaskaBounds,alaskaShape,alaskaPathGenerator)
+let hawaii=appendGeotoCanvas(hawaiiBounds,hawaiiShape,hawaiiPathGenerator)
+function plotLabels(d,values,type){let statename=stateNameAccessor(d)
+let metricValue=values[statename]
+if(typeof metricValue===undefined||isNaN(metricValue)||['Massachusetts','Rhode Island','Connecticut','New Jersey','Delaware','Maryland','Vermont','New Hampshire','District of Columbia'].includes(statename)){return""}
+if(type=="Dollars"){return dollarNumFormatter(metricValue)}else if(type=="Percentage"){return metricValue+"%"}else if(metricUnit==='ft'){return feetToFeetAnInches(parseFloat(metricValue))}else{return numFormatter(metricValue)}}
+function setXPosition(d,generator){let state=stateNameAccessor(d)
+let xPos=generator.centroid(d)[0]
+if(state=="Florida"){return xPos+1}
+else if(state=="Indiana"){return xPos+.2}
+else if(state=="Michigan"){return xPos+1}
+else if(state=="Virginia"){return xPos+.4}
+else if(state=="West Virginia"){return xPos-.3}
+return xPos}
+function setYPosition(d,generator){let state=stateNameAccessor(d)
+let yPos=generator.centroid(d)[1]
+if(state=="Idaho"){return yPos+2}
+else if(["West Virginia"].includes(state)){return yPos+.4}
+else if(["Kentucky"].includes(state)){return yPos+.6}
+else if(["Louisiana","California"].includes(state)){return yPos+1}
+else if(["Tennessee"].includes(state)){return yPos+.3}
+else if(state=="Michigan"){return yPos+2.4}
+else if(state=="Virginia"){return yPos+.3}
+else if(["Florida","New York","Maine"].includes(state)){return yPos+.5}
+else if(state=="South Carolina"){return yPos+.3}
+return yPos}
+let stateLabelValue=bounds.selectAll('text').data(stateShapes.features).enter().append('text').attr('class','map-value-labels').attr('id',d=>"map-value-labels-"+stateNameAccessor(d).replaceAll(' ','-')).attr('text-anchor','middle').attr('aligment-baseline','central').attr('x',d=>setXPosition(d,pathGenerator)).attr('y',d=>setYPosition(d,pathGenerator)).text(d=>plotLabels(d,metricData,metricType))
+class labelOutside{constructor(geoName,data,dataType,x1,y1,x2,y2){this.geoName=geoName;this.data=data;this.dataType=dataType;this.x1=x1;this.y1=y1;this.x2=x2;this.y2=y2;}}
+function labelOutsideControl(metrics,type){let filteredShapes=stateShapes.features.filter(function(feature){return['Massachusetts','Rhode Island','Connecticut','New Jersey','Delaware','Maryland','Vermont','New Hampshire'].includes(feature.properties.NAME)})
+let obj=[]
+filteredShapes.forEach(shape=>{let individualObj=new labelOutside(shape.properties.NAME,metrics[shape.properties.NAME],type,pathGenerator.centroid(shape)[0],pathGenerator.centroid(shape)[1])
+obj.push(individualObj)})
+obj.forEach(el=>{if(el.geoName=="Massachusetts"){el.y1=el.y1-.3
+el.y2=el.y1+2
+el.x2=el.x1+2}else if(el.geoName=="Rhode Island"){el.y2=el.y1+2.5
+el.x2=el.x1+1}else if(el.geoName=="Connecticut"){el.y2=el.y1+3.6
+el.x2=el.x1+1.5}else if(el.geoName=="New Jersey"){el.y2=el.y1+3.4
+el.x2=el.x1+2.5}else if(el.geoName=="Delaware"){el.y2=el.y1+3.4
+el.x2=el.x1+2.5}else if(el.geoName=="Maryland"){el.y2=el.y1+5
+el.x2=el.x1+3}else if(el.geoName=="Vermont"){el.x2=el.x1-1
+el.y2=el.y1-3}else if(el.geoName=="New Hampshire"){el.x2=el.x1
+el.y2=el.y1-5}})
+return obj}
+let labelOutsideObj=labelOutsideControl(metricData,metricType)
+function showLine(d){if(d.data=="undefined"||isNaN(d.data)){return"map-outside-stroke-NA"}else{return"map-outside-stroke"}}
+function plotOutsideLabels(d,type){let metricValue=d.data
+if(typeof metricValue=="undefined"||isNaN(metricValue)){return""}
+if(type=="Dollars"){return dollarNumFormatter(metricValue)}else if(type=="Percentage"){return metricValue+"%"}else if(metricUnit==='ft'){return feetToFeetAnInches(parseFloat(metricValue))}else{return numFormatter(metricValue)}}
+function outsideLabelMiddle(d){let state=d.geoName
+if(['Vermont','New Hampshire'].includes(state)){return"map-outside-label-middle"}
+else{return"map-value-labels"}}
+function outsideXPos(d){let state=d.geoName
+if(['Connecticut','Rhode Island'].includes(state)){return d.x2+.4}
+if(['Vermont','New Hampshire'].includes(state)){return d.x2+.2}
+else{return d.x2+.7}}
+function outsideYPos(d){let state=d.geoName
+if(['Connecticut'].includes(state)){return d.y2+.8}
+if(['Vermont','New Hampshire'].includes(state)){return d.y2-.5}
+else{return d.y2+.5}}
+const labelOutsideBound=await createBounds(mapWrapper,15,14,'map-label-outside-bound')
+let labelOutsideLine=labelOutsideBound.selectAll('line').data(labelOutsideObj).enter().append('line').attr('class',d=>showLine(d)).attr('x1',d=>d.x1).attr('y1',d=>d.y1).attr('x2',d=>d.x2).attr('y2',d=>d.y2)
+let labelOutsideText=labelOutsideBound.selectAll('text').data(labelOutsideObj).enter().append('text').attr('class',d=>outsideLabelMiddle(d)).attr('x',d=>outsideXPos(d)).attr('y',d=>outsideYPos(d)).text(d=>plotOutsideLabels(d,metricType))
+let alaskaLabelValue=alaskaBounds.selectAll('text').data(alaskaShape.features).enter().append('text').attr('class','map-value-labels').attr('text-anchor','middle').attr('aligment-baseline','central').attr('x',d=>alaskaPathGenerator.centroid(d)[0]).attr('y',d=>alaskaPathGenerator.centroid(d)[1]).text(d=>plotLabels(d,metricData,metricType))
+let hawaiiObjLabel=[new labelOutside(hawaiiShape.features[0].properties.NAME,metricData[hawaiiShape.features[0].properties.NAME],metricType,hawaiiPathGenerator.centroid(hawaiiShape)[0]+116.5,hawaiiPathGenerator.centroid(hawaiiShape)[1]+7.2,hawaiiPathGenerator.centroid(hawaiiShape)[0]+117,hawaiiPathGenerator.centroid(hawaiiShape)[1]+8.5,)]
+const hawaiilabelOutsideBound=await createBounds(mapWrapper,122.5,22.5,'map-hawaii-label-outside-bound')
+let hawaiiLabelOutsideLine=hawaiilabelOutsideBound.selectAll('line').data(hawaiiObjLabel).enter().append('line').attr("class",d=>showLine(d)).attr('x1',d=>d.x1).attr('y1',d=>d.y1).attr('x2',d=>d.x2).attr('y2',d=>d.y2)
+let hawaiiLabelOutsideText=hawaiilabelOutsideBound.selectAll('text').data(hawaiiObjLabel).enter().append('text').attr('class','map-value-labels').attr('x',d=>d.x2).attr('y',d=>d.y2+1).text(d=>plotOutsideLabels(d,metricType))
+let defs=mapWrapper.append("defs")
+let linearGradient=defs.append("linearGradient").attr("id",'linear-gradient').attr("x1","0%").attr("y1","0%").attr("x2","100%").attr("y2","0%");class legendHueObj{constructor(offset,color){this.offset=offset;this.color=color;}}
+function colorLegend(scheme,gradientDefinition){let legendHue=[]
+scheme.forEach((el,i)=>{legendHue.push(new legendHueObj(`${i*25}%`,el))})
+if(metricMin<0){gradientDefinition.selectAll("stop").data(['#C76028','#e1eef3','#226E87']).enter().append('stop').attr('stop-color',d=>d).attr('offset',(d,i)=>{let value;if(i===0){value=0}else if(i===2){value=100}else if(i===1){value=normalize100(0,metricMin,metricMax)}
+return`${
+value
+}%`})}else{gradientDefinition.selectAll("stop").data(legendHue).enter().append("stop").attr("offset",d=>d.offset).attr("stop-color",d=>d.color)}}
+colorLegend(colorScheme,linearGradient)
+let legendWrapper=await createBounds(mapWrapper,45,48,'map-legend-bounds');function appendLegend(width,height,legendBound){legendBound.append("rect").attr('class',"legendRect").attr('x',width).attr("y",10).attr("width",width).attr("height",height).style("fill","url(#linear-gradient)");}
+let legendWidth=20;let legendHeight=1.2;appendLegend(legendWidth,legendHeight,legendWrapper);let legendAxisTitle=legendWrapper.append("text").attr("id","map-legend-title-countries").attr('y',legendHeight+8.3).attr("x",legendWidth)
+let drawMinValue=legendWrapper.append('text').attr('class','map-min-max-labels').attr('id','map-min-label').attr('y',legendHeight+9.86).attr('x',legendWidth-.5).style('text-anchor','end');let drawMaxValue=legendWrapper.append('text').attr('class','map-min-max-labels').attr('y',legendHeight+9.86).attr('x',legendWidth+20.5);function plotLegendValues(element,text){element.text(text)}
+if(metricType==="Dollars"){plotLegendValues(drawMinValue,dollarNumFormatter(metricMin)+" "+metricUnit)
+plotLegendValues(drawMaxValue,dollarNumFormatter(metricMax)+" "+metricUnit)}else if(metricType==='Percentage'){plotLegendValues(drawMinValue,metricMin+"%")
+plotLegendValues(drawMaxValue,metricMax+"%")}else if(metricUnit==='ft'){plotLegendValues(drawMinValue,feetToFeetAnInches(parseFloat(metricMin)))
+plotLegendValues(drawMaxValue,feetToFeetAnInches(parseFloat(metricMax)))}else{plotLegendValues(drawMinValue,numFormatter(metricMin)+" "+metricUnit)
+plotLegendValues(drawMaxValue,numFormatter(metricMax)+" "+metricUnit)}
+if(window.innerWidth<600){d3.selectAll('.map-min-max-labels').style('font-size','1.8px')}
+function findUndefined(data){let undefinedList=[]
+stateShapes.features.forEach(el=>{let elName=el.properties['NAME']
+if((typeof data[elName]=="undefined"||isNaN(data[elName]))&&elName!="Puerto Rico"&&elName!="District of Columbia"){undefinedList.push(elName)}})
+if(typeof data["Alaska"]=="undefined"||isNaN(data["Alaska"])){undefinedList.push("Alaska")}
+if(typeof data["Hawaii"]=="undefined"||isNaN(data["Alaska"])){undefinedList.push("Hawaii")}
+return undefinedList}
+let isUndefined=findUndefined(metricData)
+function plotUndefinedBlock(bound,width,height){let xPos;if(window.innerWidth<600){xPos=width-19}else{xPos=width-17}
+let block=bound.append('rect').attr('class','map-undefined-block').attr('x',xPos).attr('y',10).attr('width',height).attr('height',height).attr('fill','#e6e6e6')
+return block}
+function plotUndefinedBlockLabel(bound,baseXValue){let xPos;if(window.innerWidth<600){xPos=baseXValue-17}else{xPos=baseXValue-15}
+let label=bound.append('text').attr('class','map-undefined-label').attr("x",xPos).attr('y',11).style('font-size','1.8px').text('Unavailable')
+return label}
+let undefinedBlock,undefinedBlockLabel;if(isUndefined.length>0){undefinedBlock=plotUndefinedBlock(legendWrapper,legendWidth,legendHeight)
+undefinedBlockLabel=plotUndefinedBlockLabel(legendWrapper,legendWidth)}
+await addClickGeoAlertLabel(mapWrapper,5,67,'state')
+function addEnterLeave(nodes){return nodes.on('mouseenter',defaultMouseEnter).on('mouseleave',defaultMouseLeave).on('mousemove',positionTooltip)}
+addEnterLeave(states)
+addEnterLeave(hawaii)
+addEnterLeave(alaska)
+d3.select('.map-tooltip').remove()
+const tooltip=await appendTooltip()
+function centerTooltip(xPos,yPos){tooltip.style("transform",`translate(
+            ${xPos}px,
+            ${yPos}px)
+        `)}
+let component1BB=d3.select('#component1').node().getBoundingClientRect()
+let scrollY=window.scrollY
+function positionTooltip(event,datum){let windowWidth=window.innerWidth
+let yPos=event.pageY-component1BB.top-scrollY
+let xPos=event.pageX-component1BB.left
+if(windowWidth<600){yPos=yPos-13}
+if(event.pageX>windowWidth/2.2){xPos=xPos-tooltip.node().getBoundingClientRect().width}
+centerTooltip(xPos,yPos)}
+function defaultMouseEnter(event,datum){onMouseEnter(datum,event)}
+function defaultMouseLeave(event,datum){onMouseLeave(datum,event)}
+function onMouseEnter(datum,event){let stateName=stateNameAccessor(datum)
+let metricValue=metricData[stateName]
+let stateRanking;if(sortOrder==="asc"){stateRanking=Object.entries(metricData).sort(([,a],[,b])=>a-b).map(row=>row[0]).indexOf(stateName)+1}else{stateRanking=Object.entries(metricData).sort(([,a],[,b])=>b-a).map(row=>row[0]).indexOf(stateName)+1}
+if(metricValue=="undefined"||isNaN(metricValue)){stateRanking=0}
+tooltip.style("opacity",1)
+if(metricValue=="undefined"||isNaN(metricValue)){tooltip.select("#map-tooltip-state-name").text(` ${stateName}`)
+tooltip.select("#map-tooltip-metric-value").text("Unavailable").style('background-color','black').style('color','#fff').style('text-align','center')
+tooltip.select('#map-tooltip-metric-name').text("")
+tooltip.select('.map-tooltip-circle-block').style('background-color','#000')
+d3.select('.map-tooltip-percentage-change').style('display','none')}else{tooltip.select("#map-tooltip-state-name").text(` #${stateRanking} ${stateName}`)
+if(metricType==='Dollars'){tooltip.select("#map-tooltip-metric-value").text(dollarUS.format(metricValue)+" "+metricUnit)}else if(metricType==='Percentage'){tooltip.select("#map-tooltip-metric-value").text(metricValue+"%")}else if(metricUnit==='ft'){tooltip.select("#map-tooltip-metric-value").text(feetToFeetAnInches(parseFloat(metricValue)))}else{tooltip.select("#map-tooltip-metric-value").text(`${numUS.format(metricValue)} ${metricUnit}`)}
+tooltip.select('#map-tooltip-metric-name').text(`${capitalizeText(metricName)}`)
+tooltip.select("#map-tooltip-metric-value").style('background-color',colorScale(metricValue))
+if(normalize100(metricValue,metricMin,metricMax)<20){tooltip.select("#map-tooltip-metric-value").style('color','#1D0D32')}else{tooltip.select("#map-tooltip-metric-value").style('color','#fff')}
+tooltip.select('.map-tooltip-circle-block').style('background-color',colorScale(metricValue))
+if(yearlyData){d3.select('.map-tooltip-percentage-change').style('display','flex')
+let changeValue=percentageChangeCalc.filter(row=>{return row!==undefined&&row[stateName]!==undefined})
+changeValue=changeValue[0][stateName]
+if(isNaN(changeValue)){changeValue=0}
+if(changeValue>0){d3.select('.map-tooltip-percentage-value-container').style('background-color','#ECFDF3')
+d3.select('.tooltip-percentage-change-arrow').text('arrow_upward').style('color','#027A48')
+d3.select('.tooltip-percentage-change-value').text(Math.abs(changeValue)+"%").style('color','#027A48')}else if(changeValue<0){d3.select('.map-tooltip-percentage-value-container').style('background-color','#FEF3F2')
+d3.select('.tooltip-percentage-change-arrow').text('arrow_downward').style('color','#B42318')
+d3.select('.tooltip-percentage-change-value').text(Math.abs(changeValue)+"%").style('color','#B42318')}else if(changeValue===0){d3.select('.map-tooltip-percentage-value-container').style('background-color','#EEEEEE')
+d3.select('.tooltip-percentage-change-arrow').text('remove').style('color','#1D0D32')
+d3.select('.tooltip-percentage-change-value').text(Math.abs(changeValue)+"%").style('color','#1D0D32')}
+d3.select('.map-tooltip-percentage-change-comparisom').text(`Vs ${previousYear}`)}else{d3.select('.map-tooltip-percentage-change').style('display','none')}}
+let stateNode=d3.select(`#map-${stateName.replaceAll(' ','-')}`)
+stateNode.style('fill','#EA344F94')
+let barNode=d3.select(`#bar-${stateName.replaceAll(' ','-')}`)
+if(barNode.node()!==null){barNode.attr('fill','#EA344F')}
+if(typeof metricValue!="undefined"&&isNaN(metricValue)===false){let legendScale=d3.scaleLinear().domain([metricMin,metricMax]).range([0,legendWidth])
+let interactiveAxisGenerator=d3.axisBottom(legendScale).tickSize(-1.2).ticks(2).tickValues([0,metricValue]).tickPadding(3)
+if(metricType==='Dollars'){interactiveAxisGenerator.tickFormat(x=>dollarNumFormatter(x))}else if(metricType==="Percentage"){interactiveAxisGenerator.tickFormat(x=>x+"%")}else if(metricUnit==='ft'){interactiveAxisGenerator.tickFormat(x=>feetToFeetAnInches(parseFloat(x)))}else{interactiveAxisGenerator.tickFormat(x=>numFormatter(x)+" "+metricUnit);}
+let legendAxis=legendWrapper.append('g').attr('class','map-interactive-axis').attr("transform","translate("+(legendWidth)+","+(legendHeight)+")").call(interactiveAxisGenerator)
+if(window.innerWidth<600){d3.selectAll('g.tick text').style('font-size','1.8px')}else{d3.selectAll('g.tick text').style('font-size','1.2px')}}}
+function onMouseLeave(datum){let stateName=stateNameAccessor(datum)
+let metricValue=metricData[stateName]
+tooltip.style("opacity",0)
+let stateNode=d3.select(`#map-${stateName.replaceAll(' ','-')}`)
+stateNode.style('fill',d=>fillColor(d,metricData,colorScale))
+let barNode=d3.select(`#bar-${stateName.replaceAll(' ','-')}`)
+if(barNode.node()!==null){let barDatum=barNode.datum()
+if(parseFloat(barDatum.data)<0){barNode.attr('fill','#C76028')}else{barNode.attr('fill','#1e637a')}}
+d3.select(".map-interactive-axis").remove()}}
+async function plotWorldQuantMap(vizWrapper,dataImport){let colorScheme=["#c4dee7","#91c0cf","#65a2b7","#307a93","#1e637a"]
+const countryShapes=await readJsonList(sdbJsonPaths)
+const countryNameAccessor=d=>d.properties['NAME_EN']
+let years=getAvailableYears(dataImport)
+years=years.sort((a,b)=>a-b)
+let yearlyData=false;if(years.length>1){yearlyData=true}
+let latestYear=Math.max(...years)
+let latestData=dataImport.filter(row=>parseFloat(row.data_year)===latestYear)
+let previousYear=false;let previousYearData=false;let percentageChangeCalc=false;if(yearlyData){let latestYearIndex=years.indexOf(latestYear)
+previousYear=years[latestYearIndex-1]
+previousYearData=dataImport.filter(row=>parseFloat(row.data_year)===previousYear)
+percentageChangeCalc=latestData.map(row=>{let currentGeo=row.geo_name
+let latestValue=parseFloat(row.data)
+let previousYearRow=previousYearData.filter(row=>{return row.geo_name===currentGeo})
+if(previousYearRow.length>0){let previousValue=parseFloat(previousYearRow[0].data)
+let changeValue=percentageChange(previousValue,latestValue)
+return{[currentGeo]:changeValue}}})}
+let dataObj=generateMainMapObj([latestData])
+const metricName=Object.keys(dataObj)[0]
+const metricData=dataObj[metricName][0]
+const metricType=dataObj[metricName][1].dataType
+const sortOrder=dataObj[metricName][2].sortOrder
+let metricUnit;if(dataImport[0].metric_unit===undefined){metricUnit=""}else{metricUnit=dataImport[0].metric_unit}
+let dimensions=new drawDimensions(924,900,10,10,20,10)
+const mapContainer=vizWrapper.append('div').attr('class','map-plot-container left-side-container')
+const mapWrapper=mapContainer.append('svg').attr("viewBox",`0 0 100 65`).attr('height','650').attr('width','1000').attr('preserveAspectRatio','xMinYMin')
+const bounds=await createBounds(mapWrapper,10,10,'map-bound')
+function createPathGenerator(scale){let proj=d3.geoNaturalEarth1().translate([35,25]).scale([scale])
+let generator=d3.geoPath().projection(proj)
+return generator}
+let pathGenerator=createPathGenerator(20)
+let metricValues=Object.values(metricData)
+let[metricMin,metricMax]=d3.extent(metricValues)
+let colorScale=createQuantMapColorScale(metricMin,metricMax,colorScheme)
+function fillColor(d,values,scale){const metricValue=values[countryNameAccessor(d)]
+if(typeof metricValue=="undefined"||isNaN(metricValue)){return"#e6e6e6"}
+return scale(metricValue)}
+function setXPosition(d,generator){let x=generator.centroid(d)[0]
+let countryName=countryNameAccessor(d)
+if(isNaN(x)===true){}
+else if(['Canada'].includes(countryName)){return x-4}
+else if(['Norway'].includes(countryName)){return x-1.2}
+else if(['Malaysia'].includes(countryName)){return x-1.4}
+else if(['South Africa'].includes(countryName)){return x-.4}
+else if(['Zimbabwe','Sri Lanka'].includes(countryName)){return x+.3}
+else if(['Somalia','Italy'].includes(countryName)){return x+.6}
+else if(['United States of America','Oman',].includes(countryName)){return x+1}
+else if(['France'].includes(countryName)){return x+2}
+else{return x}}
+function setYPosition(d,generator){let y=generator.centroid(d)[1]
+let countryName=countryNameAccessor(d)
+if(isNaN(y)==true){}
+else if(['France'].includes(countryName)){return y-1.6}
+else if(['Argentina'].includes(countryName)){return y-.5}
+else if(['Central African Republic','South Sudan','Turkey','Pakistan','Nepal','Sri Lanka'].includes(countryName)){return y+.3}
+else if(['Zimbabwe','Nigeria','Niger','Yemen','Oman','Italy'].includes(countryName)){return y+.5}
+else if(['Mauritania','Algeria','Zambia'].includes(countryName)){return y+.7}
+else if(['Canada','Mexico','Somalia','South Africa'].includes(countryName)){return y+1}
+else if(['Norway'].includes(countryName)){return y+1.2}
+else if(['Somalia'].includes(countryName)){return y+1.4}
+else if(['United States of America'].includes(countryName)){return y+2}
+else{return y}}
+function addLabels(d,dataValues,type){let countryName=countryNameAccessor(d)
+let metricValue=dataValues[countryName]
+if(typeof metricValue==undefined||isNaN(metricValue)||labelEraser(countryName)===true){return""}
+else if(type==='Dollars'){return dollarNumFormatter(metricValue)}
+else if(type==='Percentage'){return metricValue+"%"}
+else{return numFormatter(metricValue)}}
+let countries=bounds.selectAll('.node').data(countryShapes[0].features).enter().append('svg:a').attr('class','map-accordion-link').attr('xlink:href',d=>{if(window.innerWidth>600){return`#${
+countryNameAccessor(d).replaceAll("'",'').replaceAll(' ','-').toLowerCase()
+}`}}).append('svg:path').attr('class','map-countries').attr('id',d=>"map-"+countryNameAccessor(d).replaceAll(' ','-').replaceAll("'","")).attr('d',pathGenerator).style('fill',d=>fillColor(d,metricData,colorScale))
+let countryLabels=bounds.selectAll('text').data(countryShapes[0].features).enter().append('text').attr('class','map-value-labels-countries').attr('id',d=>"map-labels-"+countryNameAccessor(d).replaceAll(' ','-').replaceAll("'","")).attr('text-anchor','middle').attr('aligment-baseline','central').attr('x',d=>setXPosition(d,pathGenerator)).attr('y',d=>setYPosition(d,pathGenerator)).text(d=>addLabels(d,metricData,metricType))
+dedupeLabelsDemo(countryLabels)
+let defs=mapWrapper.append("defs")
+let linearGradient=defs.append("linearGradient").attr("id",'linear-gradient').attr("x1","0%").attr("y1","0%").attr("x2","100%").attr("y2","0%");class legendHueObj{constructor(offset,color){this.offset=offset;this.color=color;}}
+function colorLegend(scheme,gradientDefinition){let legendHue=[]
+scheme.forEach((el,i)=>{legendHue.push(new legendHueObj(`${i*25}%`,el))})
+if(metricMin<0){gradientDefinition.selectAll("stop").data(['#C76028','#e1eef3','#226E87']).enter().append('stop').attr('stop-color',d=>d).attr('offset',(d,i)=>{let value;if(i===0){value=0}else if(i===2){value=100}else if(i===1){value=normalize100(0,metricMin,metricMax)}
+return`${
+value
+}%`})}else{gradientDefinition.selectAll("stop").data(legendHue).enter().append("stop").attr("offset",d=>d.offset).attr("stop-color",d=>d.color)}}
+colorLegend(colorScheme,linearGradient)
+let legendWrapper;if(window.innerWidth<600){legendWrapper=await createBounds(mapWrapper,40,47,'map-legend-bounds');}else{legendWrapper=await createBounds(mapWrapper,35,47,'map-legend-bounds');}
+function appendLegend(width,height,legendBound){legendBound.append("rect").attr('class',"legendRect").attr('x',width).attr("y",10).attr("width",width).attr("height",height).style("fill","url(#linear-gradient)");}
+let legendWidth=20;let legendHeight=1.2;appendLegend(legendWidth,legendHeight,legendWrapper);let legendAxisTitle=legendWrapper.append("text").attr("id","map-legend-title-countries").attr('y',legendHeight+8.3).attr("x",legendWidth)
+let drawMinValue=legendWrapper.append('text').attr('class','map-min-max-labels').attr('id','map-min-label').attr('y',legendHeight+9.86).attr('x',legendWidth-.5).style('text-anchor','end');let drawMaxValue=legendWrapper.append('text').attr('class','map-min-max-labels').attr('y',legendHeight+9.86).attr('x',legendWidth+20.5);function plotLegendValues(element,text){element.text(text)}
+if(metricType==="Dollars"){plotLegendValues(drawMinValue,dollarNumFormatter(metricMin)+" "+metricUnit)
+plotLegendValues(drawMaxValue,dollarNumFormatter(metricMax)+" "+metricUnit)}else if(metricType==='Percentage'){plotLegendValues(drawMinValue,metricMin+"%")
+plotLegendValues(drawMaxValue,metricMax+"%")}else{plotLegendValues(drawMinValue,numFormatter(metricMin)+" "+metricUnit)
+plotLegendValues(drawMaxValue,numFormatter(metricMax)+" "+metricUnit)}
+function findUndefined(data){let undefinedList=[]
+countryShapes[0].features.forEach(el=>{let elName=el.properties['NAME_EN']
+if(typeof data[elName]=="undefined"||isNaN(data[elName])){undefinedList.push(elName)}})
+return undefinedList}
+let isUndefined=findUndefined(metricData)
+function plotUndefinedBlock(bound,width,height){let xPos;if(window.innerWidth<600){xPos=width-25}else{xPos=width-20}
+let block=bound.append('rect').attr('class','map-undefined-block').attr('x',xPos).attr('y',10).attr('width',height).attr('height',height).attr('fill','#e6e6e6')
+return block}
+function plotUndefinedBlockLabel(bound,baseXValue){let xPos;if(window.innerWidth<600){xPos=baseXValue-23}else{xPos=baseXValue-18}
+let label=bound.append('text').attr('class','map-undefined-label-countries').attr("x",xPos).attr('y',11).text('Unavailable')
+return label}
+let undefinedBlock,undefinedBlockLabel;if(isUndefined.length>0){undefinedBlock=plotUndefinedBlock(legendWrapper,legendWidth,legendHeight)
+undefinedBlockLabel=plotUndefinedBlockLabel(legendWrapper,legendWidth)}
+await addClickGeoAlertLabel(mapWrapper,5,62,'country')
+if(window.innerWidth<600){d3.selectAll('.map-min-max-labels').style('font-size','1.8px')
+if(isUndefined.length>0){undefinedBlockLabel.style('font-size','1.8px')}}
+adaptLabels()
+window.addEventListener("resize",adaptLabels);function adaptLabels(){if(window.innerWidth<600){d3.selectAll('.map-min-max-labels').style('font-size','1.8px')
+if(isUndefined.length>0){undefinedBlockLabel.style('font-size','1.8px')}}else{d3.selectAll('.map-min-max-labels').style('font-size','1.3px')
+if(isUndefined.length>0){undefinedBlockLabel.style('font-size','1.3px')}}}
+function addEnterLeave(nodes){return nodes.on('mouseenter',defaultMouseEnter).on('mouseleave',defaultMouseLeave).on('mousemove',positionTooltip)}
+addEnterLeave(countries)
+addEnterLeave(countryLabels)
+d3.select('.map-tooltip').remove()
+const tooltip=await appendTooltip()
+function centerTooltip(xPos,yPos){tooltip.style("transform",`translate(
+            ${xPos}px,
+            ${yPos}px)
+        `)}
+let component1BB=d3.select('#component1').node().getBoundingClientRect()
+let scrollY=window.scrollY
+function positionTooltip(event,datum){let windowWidth=window.innerWidth
+let yPos=event.pageY-component1BB.top-scrollY
+let xPos=event.pageX-component1BB.left
+if(windowWidth<600){yPos=yPos-12}
+if(event.pageX>windowWidth/2.2){xPos=xPos-tooltip.node().getBoundingClientRect().width}
+centerTooltip(xPos,yPos)}
+function defaultMouseEnter(event,datum){onMouseEnter(datum,event)}
+function defaultMouseLeave(event,datum){onMouseLeave(datum,event)}
+function onMouseEnter(datum,event){let countryName=countryNameAccessor(datum)
+let metricValue=metricData[countryName]
+let countryRanking;if(sortOrder==="asc"){countryRanking=Object.entries(metricData).sort(([,a],[,b])=>a-b).map(row=>row[0]).indexOf(countryName)+1}else{countryRanking=Object.entries(metricData).sort(([,a],[,b])=>b-a).map(row=>row[0]).indexOf(countryName)+1}
+if(metricValue=="undefined"||isNaN(metricValue)){countryRanking=0}
+tooltip.style("opacity",1)
+if(metricValue===undefined||isNaN(metricValue)){tooltip.select("#map-tooltip-state-name").text(` ${countryName.replace('eSwatini','Eswatini')}`)
+tooltip.select("#map-tooltip-metric-value").text("Unavailable").style('background-color','black').style('color','#fff').style('text-align','center')
+tooltip.select('#map-tooltip-metric-name').text("")
+tooltip.select('.map-tooltip-circle-block').style('background-color','#000')
+d3.select('.map-tooltip-percentage-change').style('display','none')}else{tooltip.select("#map-tooltip-state-name").text(` #${countryRanking} ${countryName.replace('eSwatini','Eswatini')}`)
+if(metricType==='Dollars'){tooltip.select("#map-tooltip-metric-value").text(dollarUS.format(metricValue)+" "+metricUnit)}else if(metricType==='Percentage'){tooltip.select("#map-tooltip-metric-value").text(metricValue+"%")}else{tooltip.select("#map-tooltip-metric-value").text(`${numUS.format(metricValue)} ${metricUnit}`)}
+tooltip.select('#map-tooltip-metric-name').text(`${capitalizeText(metricName)}`)
+tooltip.select("#map-tooltip-metric-value").style('background-color',colorScale(metricValue))
+if(normalize100(metricValue,metricMin,metricMax)<20){tooltip.select("#map-tooltip-metric-value").style('color','#1D0D32')}else{tooltip.select("#map-tooltip-metric-value").style('color','#fff')}
+tooltip.select('.map-tooltip-circle-block').style('background-color',colorScale(metricValue))
+if(yearlyData){d3.select('.map-tooltip-percentage-change').style('display','flex')
+let changeValue=percentageChangeCalc.filter(row=>{return row!==undefined&&row[countryName]!==undefined})
+changeValue=changeValue[0][countryName]
+if(changeValue>0){d3.select('.map-tooltip-percentage-value-container').style('background-color','#ECFDF3')
+d3.select('.tooltip-percentage-change-arrow').text('arrow_upward').style('color','#027A48')
+d3.select('.tooltip-percentage-change-value').text(Math.abs(changeValue)+"%").style('color','#027A48')}else if(changeValue<0){d3.select('.map-tooltip-percentage-value-container').style('background-color','#FEF3F2')
+d3.select('.tooltip-percentage-change-arrow').text('arrow_downward').style('color','#B42318')
+d3.select('.tooltip-percentage-change-value').text(Math.abs(changeValue)+"%").style('color','#B42318')}else if(changeValue===0){d3.select('.map-tooltip-percentage-value-container').style('background-color','#EEEEEE')
+d3.select('.tooltip-percentage-change-arrow').text('remove').style('color','#1D0D32')
+d3.select('.tooltip-percentage-change-value').text(Math.abs(changeValue)+"%").style('color','#1D0D32')}
+d3.select('.map-tooltip-percentage-change-comparisom').text(`Vs ${previousYear}`)}else{d3.select('.map-tooltip-percentage-change').style('display','none')}}
+let countryNode=d3.select(`#map-${countryName.replaceAll(' ','-').replaceAll("'","")}`)
+countryNode.style('fill','#EA344F94')
+let barNode=d3.select(`#bar-${countryName.replaceAll(' ','-').replaceAll("'","")}`)
+if(barNode.node()!==null){barNode.attr('fill','#EA344F')}
+if(typeof metricValue!="undefined"&&isNaN(metricValue)===false){let legendScale=d3.scaleLinear().domain([metricMin,metricMax]).range([0,legendWidth])
+let interactiveAxisGenerator=d3.axisBottom(legendScale).tickSize(-1.2).ticks(2).tickValues([0,metricValue]).tickPadding(3)
+if(metricType==='Dollars'){interactiveAxisGenerator.tickFormat(x=>dollarNumFormatter(x))}else if(metricType==="Percentage"){interactiveAxisGenerator.tickFormat(x=>x+"%")}else{interactiveAxisGenerator.tickFormat(x=>numFormatter(x)+" "+metricUnit);}
+let legendAxis=legendWrapper.append('g').attr('class','map-interactive-axis').attr("transform","translate("+(legendWidth)+","+(legendHeight)+")").call(interactiveAxisGenerator)
+if(window.innerWidth<600){d3.selectAll('g.tick text').style('font-size','1.8px')}else{d3.selectAll('g.tick text').style('font-size','1.2px')}}}
+function onMouseLeave(datum,event){let countryName=countryNameAccessor(datum)
+let metricValue=metricData[countryName]
+tooltip.style("opacity",0)
+let countryNode=d3.select(`#map-${countryName.replaceAll(' ','-').replaceAll("'","")}`)
+countryNode.style('fill',d=>fillColor(d,metricData,colorScale))
+let barNode=d3.select(`#bar-${countryName.replaceAll(' ','-').replaceAll("'","")}`)
+if(barNode.node()!==null){if(metricValue<0){barNode.attr('fill','#C76028')}else{barNode.attr('fill','#1e637a')}}
+d3.select(".map-interactive-axis").remove()}}
+async function plotUSQualiMap(vizWrapper,dataImport){const[stateShapes,alaskaShape,hawaiiShape]=await readJsonList(sdbJsonPaths)
+const stateNameAccessor=d=>d.properties['NAME']
+const years=getAvailableYears(dataImport)
+let latestYear=Math.max(...years)
+let latestData=dataImport.filter(row=>parseFloat(row.data_year)===latestYear)
+let dataObj=generateMainMapObj([latestData])
+const metricName=Object.keys(dataObj)[0]
+const metricData=dataObj[metricName][0]
+const metricType=dataObj[metricName][1].dataType
+let dimensions=new drawDimensions(924,606,10,10,20,10)
+const mapContainer=vizWrapper.append('div').attr('class','map-plot-container left-side-container')
+const mapWrapper=mapContainer.append('svg').attr("viewBox",`0 0 100 65`).attr('height',dimensions.height).attr('width',dimensions.width).attr('preserveAspectRatio','xMinYMin')
+const bounds=await createBounds(mapWrapper,10,10,'map-bound')
+const alaskaBounds=await createBounds(mapWrapper,-100,8,'alaska-bound')
+const hawaiiBounds=await createBounds(mapWrapper,237,26,'hawaii-bound')
+function createPathGenerator(scale){let proj=d3.geoMercator().translate([185,80]).scale([scale])
+let generator=d3.geoPath().projection(proj)
+return generator}
+let pathGenerator=createPathGenerator(85)
+let alaskaPathGenerator=createPathGenerator(25)
+let hawaiiPathGenerator=createPathGenerator(140)
+let colorScale=createColorScale(metricType,metricData)
+function fillColor(d,type,values,scale){const metricValue=values[stateNameAccessor(d)]
+if(['Binary','Nominal'].includes(type)){if(typeof metricValue=="undefined"||["","NA"].includes(metricValue)){return"#e6e6e6"}else{return scale(metricValue)}}else if(['Diverging Ordinal','Ordinal'].includes(type)){if(typeof metricValue=="undefined"||["","NA"].includes(metricValue)){return"#e6e6e6"}else{return scale(extractParenthesesValue(metricValue))}}}
+function appendGeotoCanvas(bound,geojson,generator){let paths=bound.selectAll('.node').data(geojson.features).enter().append('svg:a').attr('class','map-accordion-link').attr('xlink:href',d=>{if(window.innerWidth>600){return`#${
+stateNameAccessor(d).replaceAll("'",'').replaceAll(' ','-').toLowerCase()
+}`}}).append('svg:path').attr('class','map-states').attr('id',d=>"map-"+stateNameAccessor(d).replaceAll(' ','-')).attr('d',generator).style('fill',d=>fillColor(d,metricType,metricData,colorScale))
+return paths}
+let states=appendGeotoCanvas(bounds,stateShapes,pathGenerator)
+let alaska=appendGeotoCanvas(alaskaBounds,alaskaShape,alaskaPathGenerator)
+let hawaii=appendGeotoCanvas(hawaiiBounds,hawaiiShape,hawaiiPathGenerator)
+await addClickGeoAlertLabel(mapWrapper,5,63,'state')
+function addEnterLeave(nodes){return nodes.on('mouseenter',defaultMouseEnter).on('mouseleave',defaultMouseLeave).on('mousemove',positionTooltip)}
+addEnterLeave(states)
+addEnterLeave(hawaii)
+addEnterLeave(alaska)
+d3.select('.map-tooltip').remove()
+const tooltip=await appendTooltip()
+function centerTooltip(xPos,yPos){tooltip.style("transform",`translate(
+              ${xPos}px,
+              ${yPos}px)
+          `)}
+let component1BB=d3.select('#component1').node().getBoundingClientRect()
+let scrollY=window.scrollY
+function positionTooltip(event,datum){let windowWidth=window.innerWidth
+let yPos=event.pageY-component1BB.top-scrollY
+let xPos=event.pageX-component1BB.left
+if(windowWidth<600){yPos=yPos-13}
+if(event.pageX>windowWidth/2.2){xPos=xPos-tooltip.node().getBoundingClientRect().width}
+centerTooltip(xPos,yPos)}
+function defaultMouseEnter(event,datum){onMouseEnter(datum,event)}
+function defaultMouseLeave(event,datum){onMouseLeave(datum,event)}
+function onMouseEnter(datum){let stateName=stateNameAccessor(datum)
+let metricValue=metricData[stateName]
+tooltip.style("opacity",1)
+d3.select('.map-tooltip-percentage-change').style('display','none')
+tooltip.select('.map-tooltip-state-name').text(stateName)
+if(metricValue===undefined||metricValue==="NA"){tooltip.select("#map-tooltip-metric-value").text("Unavailable").style('background-color','#000').style('color','#fff')
+tooltip.select('#map-tooltip-metric-name').text("")
+tooltip.select('.map-tooltip-circle-block').style('background-color','#000')}else{if(['Binary','Nominal'].includes(metricType)){tooltip.select('#map-tooltip-metric-value').text(capitalizeText(metricValue)).style('background-color',colorScale(metricValue)).style('color','#fff')
+tooltip.select('.map-tooltip-circle-block').style('background-color',colorScale(metricValue))}else if(['Ordinal','Diverging Ordinal'].includes(metricType)){tooltip.select('#map-tooltip-metric-value').text(capitalizeText(removeParenthesesValue(metricValue))).style('background-color',colorScale(extractParenthesesValue(metricValue))).style('color','#fff')
+tooltip.select('.map-tooltip-circle-block').style('background-color',colorScale(extractParenthesesValue(metricValue)))}
+tooltip.select('#map-tooltip-metric-name').text(`${capitalizeText(metricName)} `)}
+d3.select(`#map-${stateName.replaceAll(' ','-')}`).style('opacity',.7).style('stroke','black')
+let barNode;if(metricValue===undefined||metricValue==="NA"){barNode=d3.select('#category-bars-Not-Available')}else{if(['Ordinal','Diverging Ordinal'].includes(metricType)){barNode=d3.select(`#category-bars-${extractParenthesesValue(metricValue)}`)}else{barNode=d3.select(`#category-bars-${metricValue.replaceAll(' ','-')}`)}}
+barNode.attr('opacity',.7).attr('stroke','black').attr('stroke-width','.2px')}
+function onMouseLeave(datum){let stateName=stateNameAccessor(datum)
+let metricValue=metricData[stateName]
+d3.select(`#map-${stateName.replaceAll(' ','-')}`).style('opacity',1).style('stroke','white')
+let barNode;if(metricValue===undefined||metricValue==="NA"){barNode=d3.select('#category-bars-Not-Available')}else{if(['Ordinal','Diverging Ordinal'].includes(metricType)){barNode=d3.select(`#category-bars-${extractParenthesesValue(metricValue)}`)}else{barNode=d3.select(`#category-bars-${metricValue.replaceAll(' ','-')}`)}}
+barNode.attr('opacity',1).attr('stroke',null)
+tooltip.style('opacity',0)}}
+async function plotWorldQualiMap(vizWrapper,dataImport){const countryShapes=await readJsonList(sdbJsonPaths)
+const countryNameAccessor=d=>d.properties['NAME_EN']
+const years=getAvailableYears(dataImport)
+let latestYear=Math.max(...years)
+let latestData=dataImport.filter(row=>parseFloat(row.data_year)===latestYear)
+let dataObj=generateMainMapObj([latestData])
+const metricName=Object.keys(dataObj)[0]
+const metricData=dataObj[metricName][0]
+const metricType=dataObj[metricName][1].dataType
+let dimensions=new drawDimensions(924,900,10,10,20,10)
+const mapContainer=vizWrapper.append('div').attr('class','map-plot-container left-side-container')
+const mapWrapper=mapContainer.append('svg').attr("viewBox",`0 0 100 65`).attr('height','650').attr('width','1000').attr('preserveAspectRatio','xMinYMin')
+const bounds=await createBounds(mapWrapper,10,10,'map-bound')
+function createPathGenerator(scale){let proj=d3.geoNaturalEarth1().translate([35,25]).scale([scale])
+let generator=d3.geoPath().projection(proj)
+return generator}
+let pathGenerator=createPathGenerator(21)
+let colorScale=createColorScale(metricType,metricData)
+function fillColor(d,type,values,scale){const metricValue=values[countryNameAccessor(d)]
+if(['Binary','Nominal'].includes(type)){if(typeof metricValue=="undefined"||["","NA"].includes(metricValue)){return"#e6e6e6"}else{return scale(metricValue)}}else if(['Diverging Ordinal','Ordinal'].includes(type)){if(typeof metricValue=="undefined"||["","NA"].includes(metricValue)){return"#e6e6e6"}else{return scale(extractParenthesesValue(metricValue))}}}
+let countries=bounds.selectAll('.node').data(countryShapes[0].features).enter().append('svg:a').attr('class','map-accordion-link').attr('xlink:href',d=>{if(window.innerWidth>600){return`#${
+countryNameAccessor(d).replaceAll("'",'').replaceAll(' ','-').toLowerCase()
+}`}}).append('svg:path').attr('class','map-countries').attr('id',d=>"map-"+countryNameAccessor(d).replaceAll(' ','-').replaceAll("'","")).attr('d',pathGenerator).style('fill',d=>fillColor(d,metricType,metricData,colorScale))
+await addClickGeoAlertLabel(mapWrapper,5,62,'country')
+countries.on('mouseenter',defaultMouseEnter).on('mouseleave',defaultMouseLeave).on('mousemove',positionTooltip)
+d3.select('.map-tooltip').remove()
+const tooltip=await appendTooltip()
+function centerTooltip(xPos,yPos){tooltip.style("transform",`translate(
+            ${xPos}px,
+            ${yPos}px)
+        `)}
+let component1BB=d3.select('#component1').node().getBoundingClientRect()
+let scrollY=window.scrollY
+let FIRST_POSITION=true;function positionTooltip(event,datum){let windowWidth=window.innerWidth
+let yPos=event.pageY-component1BB.top-scrollY
+let xPos=event.pageX-component1BB.left
+if(windowWidth<600&FIRST_POSITION===false){yPos=yPos-20}
+if(FIRST_POSITION){FIRST_POSITION=false}
+if(event.pageX>windowWidth/2.2){xPos=xPos-tooltip.node().getBoundingClientRect().width}
+centerTooltip(xPos,yPos)}
+function defaultMouseEnter(event,datum){onMouseEnter(datum,event)}
+function defaultMouseLeave(event,datum){onMouseLeave(datum,event)}
+function onMouseEnter(datum){let countryName=countryNameAccessor(datum)
+let metricValue=metricData[countryName]
+tooltip.style("opacity",1)
+d3.select('.map-tooltip-percentage-change').style('display','none')
+tooltip.select('.map-tooltip-state-name').text(countryName)
+if(metricValue===undefined||metricValue==="NA"){tooltip.select("#map-tooltip-metric-value").text("Unavailable").style('background-color','#000').style('color','#fff')
+tooltip.select('#map-tooltip-metric-name').text("")
+tooltip.select('.map-tooltip-circle-block').style('background-color','#000')}else{if(['Binary','Nominal'].includes(metricType)){tooltip.select('#map-tooltip-metric-value').text(capitalizeText(metricValue)).style('background-color',colorScale(metricValue)).style('color','#fff')
+tooltip.select('.map-tooltip-circle-block').style('background-color',colorScale(metricValue))}else if(['Ordinal','Diverging Ordinal'].includes(metricType)){tooltip.select('#map-tooltip-metric-value').text(capitalizeText(removeParenthesesValue(metricValue))).style('background-color',colorScale(extractParenthesesValue(metricValue))).style('color','#fff')
+tooltip.select('.map-tooltip-circle-block').style('background-color',colorScale(extractParenthesesValue(metricValue)))}
+tooltip.select('#map-tooltip-metric-name').text(`${capitalizeText(metricName)} `)}
+d3.select(`#map-${countryName.replaceAll(' ','-').replaceAll("'","")}`).style('opacity',.7).style('stroke','black')
+let barNode;if(metricValue===undefined||metricValue==="NA"){barNode=d3.select('#category-bars-Not-Available')}else{if(['Ordinal','Diverging Ordinal'].includes(metricType)){barNode=d3.select(`#category-bars-${extractParenthesesValue(metricValue)}`)}else{barNode=d3.select(`#category-bars-${metricValue.replaceAll(' ','-')}`)}}
+barNode.attr('opacity',.7).attr('stroke','black').attr('stroke-width','.2px')}
+function onMouseLeave(datum){let countryName=countryNameAccessor(datum)
+let metricValue=metricData[countryName]
+d3.select(`#map-${countryName.replaceAll(' ','-').replaceAll("'","")}`).style('opacity',1).style('stroke','white')
+let barNode;if(metricValue===undefined||metricValue==="NA"){barNode=d3.select('#category-bars-Not-Available')}else{if(['Ordinal','Diverging Ordinal'].includes(metricType)){barNode=d3.select(`#category-bars-${extractParenthesesValue(metricValue)}`)}else{barNode=d3.select(`#category-bars-${metricValue.replaceAll(' ','-')}`)}}
+barNode.attr('opacity',1).attr('stroke',null)
+tooltip.style('opacity',0)}}

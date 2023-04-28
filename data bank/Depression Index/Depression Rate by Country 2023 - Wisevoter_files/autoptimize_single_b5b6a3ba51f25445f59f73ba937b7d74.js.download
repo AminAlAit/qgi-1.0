@@ -1,0 +1,4 @@
+$(document).ready(function(){let table=$('#shdb-on-page-table').DataTable({paging:false,searching:false,bInfo:false});$('body').find('.dataTables_scrollBody').addClass("on-page-scrollbar");let contentWidth=$('body').find('#content')[0].getBoundingClientRect().width
+if(window.innerWidth<640){$('body').find('.shield-db-component-4').css('width',contentWidth+'px')}else{$('body').find('.shield-db-component-4').css('width',contentWidth*0.9+'px')}
+$(window).resize(function(){let contentWidth=$('body').find('#content')[0].getBoundingClientRect().width
+if(window.innerWidth<640){$('body').find('.shield-db-component-4').css('width',contentWidth+'px')}else{$('body').find('.shield-db-component-4').css('width',contentWidth*0.9+'px')}});});

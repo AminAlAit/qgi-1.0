@@ -10,8 +10,10 @@ def displayTime(i):
         print("Script started execution at:")
         print(dt.now())
         print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ START //////////////////")
+        return dt.now()
     elif i == 1:
         print("////////////////// END \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
         print("Script ended execution at:")
         print(dt.now())
         print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ END //////////////////")
+        return dt.now()

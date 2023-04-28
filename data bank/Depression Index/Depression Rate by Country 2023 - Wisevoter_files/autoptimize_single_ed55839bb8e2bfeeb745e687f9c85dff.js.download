@@ -1,0 +1,59 @@
+async function mapPane(wrapper,dataImport){const mapPaneConstructor=new mapPaneControl(plotUSQuantMap,plotUSQualiMap,plotWorldQuantMap,plotWorldQualiMap)
+d3.select('.map-main-container').style('width',null)
+let pageType;if(['Binary','Nominal','Diverging Ordinal','Ordinal'].includes(dataImport[0].metric_data_type)){pageType="categorical"}else{pageType="choropleth"}
+await mapPaneConstructor[geoLevel][pageType].map(wrapper,dataImport)}
+async function tablePane(wrapper,dataImport){const years=getAvailableYears(dataImport)
+let latestYear=Math.max(...years)
+let yearlyData=false;if(years.length>1){yearlyData=true}
+let latestData=dataImport.filter(row=>parseFloat(row.data_year)===latestYear)
+let previousYear=false;let previousYearData=false;let percentageChangeCalc=false;if(yearlyData){let latestYearIndex=years.indexOf(latestYear)
+previousYear=years[latestYearIndex-1]
+previousYearData=dataImport.filter(row=>parseFloat(row.data_year)===previousYear)
+percentageChangeCalc=latestData.map(row=>{let currentGeo=row.geo_name
+let latestValue=parseFloat(row.data)
+let previousYearRow=previousYearData.filter(row=>{return row.geo_name===currentGeo})
+if(previousYearRow.length>0){let previousValue=parseFloat(previousYearRow[0].data)
+let changeValue=percentageChange(previousValue,latestValue)
+return{[currentGeo]:changeValue}}})}
+if(latestData[0].metric_sort_order==='asc'){latestData=latestData.sort((a,b)=>parseFloat(a.data)-parseFloat(b.data))}else{latestData=latestData.sort((a,b)=>parseFloat(b.data)-parseFloat(a.data))}
+let theadValues;if(geoLevel==='us_state'){if(['Dollars','Percentage','Integer','Decimal'].includes(latestData[0].metric_data_type)){theadValues=['#','State',latestData[0].metric_name];if(yearlyData){theadValues[2]=theadValues[2]+' ('+latestData[0].data_year+')'
+theadValues.push(`% Change (vs. ${previousYear})`)}}else{theadValues=['State',latestData[0].metric_name];}}else{if(['Dollars','Percentage','Integer','Decimal'].includes(latestData[0].metric_data_type)){theadValues=['#','Country',latestData[0].metric_name];if(yearlyData){theadValues[2]=theadValues[2]+' ('+latestData[0].data_year+')'
+theadValues.push(`% (vs. ${previousYear})`)}}else{theadValues=['Country',latestData[0].metric_name];}}
+if(window.innerWidth<600){wrapper.style('width','100%')}else{if(geoLevel==='us_state'){wrapper.style('width','72%')}else{wrapper.style('width','78%')}}
+let tableContainer=wrapper.append('div').attr('class','left-side-container main-pane-table-container')
+let tableWrapper=tableContainer.append('div').attr('class','main-table-wrapper')
+let table=tableWrapper.append('table').attr('class','component1-table').attr('id','component1-table')
+let thead=table.append('thead')
+let theadRow=thead.append('tr').selectAll('th').data(theadValues).enter().append('th').text(d=>d).attr('title',d=>d)
+let tbody=table.append('tbody')
+function plotValues(d,type,metricUnit){if(type=="Dollars"){return dollarNumFormatter(d)+" "+metricUnit}else if(type=="Percentage"){return parseFloat(parseFloat(d).toFixed(2))+"%"}else if(['Integer','Decimal'].includes(type)){if(metricUnit==='ft'&&geoLevel==='us_state'){return feetToFeetAnInches(parseFloat(d))}else{return numFormatter(d)+" "+metricUnit}}else if(['Ordinal','Diverging Ordinal'].includes(type)){return removeParenthesesValue(d)}else{return d}}
+latestData.forEach(row=>{let tbodyRow=tbody.append('tr')
+let geoRank=false;if(['Dollars','Percentage','Integer','Decimal'].includes(latestData[0].metric_data_type)){geoRank=latestData.map(data=>data.geo_name).indexOf(row.geo_name)+1
+let tbodyRanking=tbodyRow.append('td').text(geoRank)}
+let tbodyGeo=tbodyRow.append('td').text(row.geo_name.replace('eSwatini','Eswatini')).attr('title',row.geo_name.replace('eSwatini','Eswatini'))
+let tbodyData=tbodyRow.append('td').text(plotValues(row.data,row.metric_data_type,row.metric_unit)).attr('title',plotValues(row.data,row.metric_data_type,row.metric_unit))
+if(geoRank){tbodyData.attr('data-order',geoRank)}
+if(['Dollars','Percentage','Integer','Decimal'].includes(latestData[0].metric_data_type)&&yearlyData){let changeValue=percentageChangeCalc.filter(perceRow=>perceRow!==undefined&&perceRow[row.geo_name]!==undefined)
+if(changeValue.length>0){changeValue=changeValue[0][row.geo_name]
+if(isNaN(changeValue)){changeValue=0;}
+let tbodyChange=tbodyRow.append('td').text(changeValue+'%').attr('title',changeValue+'%')
+if(changeValue>0){tbodyChange.style('color','#027A48').style('font-weight','400')}else if(changeValue<0){tbodyChange.style('color','#B42318').style('font-weight','400')}else{tbodyChange.style('color','#1D0D32').style('font-weight','400')}}else{let tbodyChange=tbodyRow.append('td').text('').attr('title','')}}})
+let args={paging:false,searching:true,bInfo:false,language:{searchPlaceholder:"Search",search:"",}}
+if(['Dollars','Percentage','Integer','Decimal'].includes(latestData[0].metric_data_type)){if(yearlyData){args['columns']=[{"width":"4%"},null,null,null]}else{args['columns']=[{"width":"4%"},null,null]}}
+let dataTable=$('#component1-table').DataTable(args);function updateTableHeight(){if(window.innerWidth>600){let barHeight=d3.select('.bar-plot-container').node().getBoundingClientRect().height
+d3.select('.main-pane-table-container').style('max-height',barHeight+'px')}else{d3.select('.main-pane-table-container').style('max-height','614px')}}
+updateTableHeight()
+window.addEventListener("resize",updateTableHeight);}
+async function barPane(wrapper,dataImport){const barMainContainer=wrapper.append('div').attr('class','bar-main-container')
+const topLastButtonContainer=barMainContainer.append('div').attr('class','top-last-container')
+const topButton=topLastButtonContainer.append('p').attr('class','top-last-button').attr('id','top-button')
+let topButtonArrow=topButton.append('span').attr('class','material-symbols-outlined').style('font-size','1em').style('color','#DD174C')
+let topButtonLabel=topButton.append('span').attr('class','bar-button-label').style('color','#1D0D32').text('Top 10')
+const lastButton=topLastButtonContainer.append('p').attr('class','top-last-button').attr('id','last-button').style('color','#98A0B3')
+let lastButtonArrow=lastButton.append('span').attr('class','material-symbols-outlined').style('font-size','1em').style('font-weight','bold')
+let lastButtonLabel=lastButton.append('span').attr('class','bar-button-label').text('Last 10')
+if(dataImport[0].metric_sort_order==="desc"){topButtonArrow.text('arrow_downward')
+lastButtonArrow.text('arrow_upward')}else{topButtonArrow.text('arrow_upward')
+lastButtonArrow.text('arrow_downward')}
+if(['Binary','Nominal','Diverging Ordinal','Ordinal'].includes(dataImport[0].metric_data_type)){topLastButtonContainer.style('opacity','0')
+await plotQualiBar(barMainContainer,dataImport)}else{await plotQuantBar(barMainContainer,dataImport)}}

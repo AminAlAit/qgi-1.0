@@ -1,16 +1,17 @@
 from datetime import datetime, time, date
 import matplotlib.pyplot as plt
-#import plotly.express    as px
 import pandas            as pd
 import numpy             as np
 import dataPrep          as dp
-#import pycountry
 import requests
-import time
 import json
 
+countriesReference = "https://raw.githubusercontent.com/flyingcircusio/pycountry/main/src/pycountry/databases/iso3166-1.json"
+countriesCSVFolder = r"/workspace/qgi\trojan\countries"
+countriesCSVPath   = r"/workspace/qgi\trojan\countries\countries.csv"
+
 def countriesInit():
-    dictt      = json.loads(requests.get("https://raw.githubusercontent.com/flyingcircusio/pycountry/main/src/pycountry/databases/iso3166-1.json").text)
+    dictt      = json.loads(requests.get(countriesReference).text)
     name       = []
     alpha2     = []
     alpha3     = []
@@ -46,6 +47,7 @@ def countriesInit():
             name.append(np.nan)
             name2.append(np.nan)
             name3.append(np.nan)
+
         name4.append(np.nan)
         name5.append(np.nan)
         name6.append(np.nan)
@@ -56,12 +58,20 @@ def countriesInit():
 
     countries = pd.DataFrame(cols, colNames).T
     temp      = []
-    goodnames = ["South Korea", "North Korea", "Taiwan", "Palestine", "Laos", "Iran", "Russia", "Bolivia", "Syria", "Venezuela", "Tanzania", "Vietnam", "Vatican City",
-                "Congo", "Brunei", "Ivory Coast", "Moldova", "Micronesia",  "Myanmar"]
-    badnames  = ["Korea, Republic of", "Korea, Democratic People's Republic of", "Taiwan, Province of China", "Palestine, State of", "Lao People's Democratic Republic", 
-                "Iran, Islamic Republic of", "Russian Federation", "Bolivia, Plurinational State of", "Syrian Arab Republic", "Venezuela, Bolivarian Republic of", 
-                "Tanzania, United Republic of", "Viet Nam", "Holy See (Vatican City State)", "Congo, The Democratic Republic of the", "Brunei Darussalam", "Côte d'Ivoire",
-                "Moldova, Republic of", "Micronesia, Federated States of", "Burma"]
+    goodnames = [
+        "South Korea", "North Korea", "Taiwan",   "Palestine", "Laos",         "Iran",  "Russia", "Bolivia", 
+        "Syria",       "Venezuela",   "Tanzania", "Vietnam",   "Vatican City", "Congo", "Brunei", "Ivory Coast", 
+        "Moldova",     "Micronesia",  "Myanmar"]
+    
+    badnames  = [
+        "Korea, Republic of",                "Korea, Democratic People's Republic of", "Taiwan, Province of China", 
+        "Palestine, State of",               "Lao People's Democratic Republic",       "Iran, Islamic Republic of", 
+        "Russian Federation",                "Bolivia, Plurinational State of",        "Syrian Arab Republic", 
+        "Venezuela, Bolivarian Republic of", "Tanzania, United Republic of",           "Viet Nam",
+        "Holy See (Vatican City State)",     "Congo, The Democratic Republic of the",  "Brunei Darussalam", 
+        "Côte d'Ivoire",                     "Moldova, Republic of",                   "Micronesia, Federated States of", 
+        "Burma"]
+
     for j in range(len(goodnames)):
         for i in range(len(countries.index)):
             if countries.iloc[i, 0] == badnames[j]:
@@ -105,7 +115,7 @@ def countriesInit():
     countries = addCountry(countries, "Netherlands Antilles", np.nan,                       np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, "AN", "ANT", np.nan)
 
     countries = countries.sort_values(by = ["Name"], ascending = True).reset_index(drop = True)
-    countries.to_csv("countries.csv")
+    countries.to_csv(countriesCSVFolder + "\\" + "countries.csv")
 
 def addCountry(df, name1, name2, name3, name4, name5, name6, name7, name8, name9, name10, alpha2, alpha3, numeric):
     df.loc[-1] = [name1, name2, name3, name4, name5, name6, name7, name8, name9, name10, alpha2, alpha3, numeric]  # adding a row
@@ -120,7 +130,7 @@ def correctCountryName(country):
     returns 0, so try to catch the 0s to see which countries/territories are not 
     registered yet.
     """
-    countries = pd.read_csv(r"/workspace/qgi Geopolitics\data engine\Trojan Geopolitics\Indexes\Numbeo\countries.csv")
+    countries = pd.read_csv()
     country   = country.replace(" AND ", " and").replace(" And ", " and ").replace(" & ", " and ")
     country   = country.replace(" THE ", " the ").replace(" The ", " the ")
     country   = country.replace(" OF ", " of ").replace(" Of ", " of ")
@@ -149,7 +159,7 @@ def correctCountryName(country):
         return 0
 
 def dateCountryNamesStandardizer(df, dateCol, countryCol, dateFix = "", format = "%Y.%m.%d", dateOrTime = "date", NAN = "nan"):
-    countries         = pd.read_csv(r"/workspace/qgi Geopolitics\data engine\Trojan Geopolitics\Indexes\Numbeo\countries.csv")
+    countries         = pd.read_csv(countriesCSVPath)
     df                = dp.dashToNAN(df)
     correctedNames    = []
     notCorrectedNames = []

@@ -47,6 +47,7 @@ def calc_euclidean(actual, predic):
 
 def calc_mape(actual, predic):
     actual, predic = dp.cleanRemoveNaNs(actual, predic)
+    actual         = dp.zeroesListToCloseToZero(actual)
     return np.mean(np.abs((np.array(actual) - np.array(predic)) / actual))
 
 def calc_dtw(l1, l2):

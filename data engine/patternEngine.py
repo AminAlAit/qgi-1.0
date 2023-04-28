@@ -1,25 +1,160 @@
+from  collections       import Counter
 import patternValidator as pv
+import countriesIndex   as ci
 import patternFinder    as pf
-import dataPrep         as dp
 import khartoush        as kh
+import dataPrep         as dp
 import pandas           as pd
 import numpy            as np
+import pickle
 import viz
+import os
 
+countriesFolderPath   = "C:\\Users\\Amin\\Desktop\\trojan\\trojan\\countries patterns\\"
+countriesPatternsPath = r"C:\Users\Amin\Desktop\trojan\trojan\countries patterns\\"
+projectPath           = r"C:\Users\Amin\Desktop\trojan"
+showcasePath          = r"C:\Users\Amin\Desktop\trojan\trojan\showcase\\"
+
+def engine(patternize:   bool = True, filter:       bool = True, 
+           refine:       bool = True, sortPatterns: bool = True, 
+           showcaseCond: bool = True, csvConvert:   bool = True):
+    
+    if patternize:
+        freshCutIndexes = dp.getFreshCutIndexes()
+        for freshCutIndex in freshCutIndexes:
+            res = patternizeThisIndex(indexPath = freshCutIndex)
+            print("$$$$$$$$$$$ ", freshCutIndex.split("\\")[-1], " $$$$$$$$$$$")
+            print("Duration: ", str(res[-1]))
+            print("$$$$$$$$$$$ ", freshCutIndex.split("\\")[-1], " $$$$$$$$$$$")
+    
+    if filter:
+        ## Country Filter
+        # Creating individual dataframes (csv) for each country by taking their patterns from each patternized index
+        patternized_indexes = []
+        for root, _, files in os.walk(projectPath):
+            for file in files:
+                if file.endswith("Index_PATTERNS_DF.csv"):
+                    patternized_indexes.append(os.path.join(root, file))
+
+        for path in patternized_indexes:
+            dp.countryFilter(pd.read_csv(path).drop("Unnamed: 0", axis = 1), countriesPatternsPath)
+
+    if refine:
+        ## Refining: creating individual dictionaries
+        # Refining the separate country dataframes into dictionaries
+        for country in os.listdir(countriesPatternsPath):
+            country = country.split("_")[0]
+            df      = pd.read_csv(countriesFolderPath + country + "_PATTERNS_DF.csv").drop("Unnamed: 0", axis = 1)
+
+            countryDict = {}
+            for pattLen in list(set(df["Pattern Length"])):
+                pattIndexStarts  = list(set(df[df["Pattern Length"] == pattLen]["Pattern Index Start"]))
+                countryDict[pattLen] = {}
+
+                for pattIndexStart in pattIndexStarts:
+                    dfTemp       = df[df["Pattern Length"] == pattLen]
+                    dfTemp       = dfTemp[dfTemp["Pattern Index Start"] == pattIndexStart]
+                    temp         = list(dfTemp["Match Country"])
+                    countryCount = pd.DataFrame.from_dict(Counter(temp), orient = "index")
+                    countryCount = countryCount[countryCount[list(countryCount)[0]] >= 2]
+                    countryDict[pattLen][pattIndexStart] = {}
+
+                    for countryMatch in list(countryCount.index):
+                        countriesMatchDF = dfTemp[dfTemp["Match Country"] == countryMatch]
+                        temp             = list(countriesMatchDF["Match Index Start"])
+                        matchIndexStarts = pd.DataFrame.from_dict(Counter(temp), orient = "index")
+                        matchIndexStarts = matchIndexStarts[matchIndexStarts[list(matchIndexStarts)[0]] >= 2]
+
+                        for matchIndexStart in list(matchIndexStarts.index):
+                            countriesMatchIndexStartDF = countriesMatchDF[countriesMatchDF["Match Index Start"] == matchIndexStart]
+                            countryDict[pattLen][pattIndexStart][countryMatch] = countriesMatchIndexStartDF
+
+            with open(countriesFolderPath + country + "_REFINED_DICT.pkl", "wb") as f:
+                pickle.dump(countryDict, f)
+
+    if sortPatterns:
+        allSortedPatterns = dp.getAllSortedPatterns()
+
+    if showcaseCond:
+        showcase(allSortedPatterns = allSortedPatterns)
+    
+    ## Converting to CSVs
+    if csvConvert:
+        dp.patternsPickleToCSV()
+
+    return allSortedPatterns
+
+def showcase(
+        allSortedPatterns: dict  = None, 
+        minCorrelation:    float = 0.9, 
+        patternLength:     int   = 6, 
+        diffStarts:        bool  = True):
+    
+    if allSortedPatterns is None:
+        return {}
+    
+    # The default patterns showcase are with 90% correlation, and pattern Index start != match index start, and pattern length >= 3
+    allSortedPatternsDiffShowcase = dp.filterSortedPatternDict(
+        sortedPatternsDict           = allSortedPatterns, 
+        corrScore                    = minCorrelation, 
+        pattLength                   = patternLength, 
+        onlyDifferentPattIndexStarts = diffStarts)
+
+    # saving the showcasing dictionary
+    with open(showcasePath + "allSortedPatternsShowcase.pkl", "wb") as f:
+        pickle.dump(allSortedPatternsDiffShowcase, f)
+
+    # saving the countries lists
+    countries                = list(allSortedPatterns.keys())
+    countriesShowcase        = list(allSortedPatternsDiffShowcase.keys())
+    patternCountries         = []
+    matchCountries           = []
+    patternCountriesShowcase = []
+    matchCountriesShowcase   = []
+
+    for i in range(len(countries)):
+        patternCountries.append(dp.removeNumbersFromString(countries[i].split("-")[0]))
+        matchCountries.append(dp.removeNumbersFromString(countries[i].split("-")[-1]))
+    patternCountries = list(set(patternCountries))
+    matchCountries   = list(set(matchCountries))
+
+    for i in range(len(countriesShowcase)):
+        patternCountriesShowcase.append(dp.removeNumbersFromString(countriesShowcase[i].split("-")[0]))
+        matchCountriesShowcase.append(dp.removeNumbersFromString(countriesShowcase[i].split("-")[-1]))
+    patternCountriesShowcase = list(set(patternCountriesShowcase))
+    matchCountriesShowcase   = list(set(matchCountriesShowcase))
+
+    pd.DataFrame({"Pattern Countries":          patternCountries}).to_csv(showcasePath         + "patternCountries.csv")
+    pd.DataFrame({"Match Countries":            matchCountries}).to_csv(showcasePath           + "matchCountries.csv")
+    pd.DataFrame({"Pattern Countries Showcase": patternCountriesShowcase}).to_csv(showcasePath + "patternCountriesShowcase.csv")
+    pd.DataFrame({"Pattern Countries Showcase": matchCountriesShowcase}).to_csv(showcasePath   + "matchCountriesShowcase.csv")
+
+def patternizeThisIndex(indexPath: str, 
+                        patternInterval: list = [3, 4, 5, 6, 7, 8, 9, 10], 
+                        dropCols: list        = [], 
+                        fixYears: list        = [".01", ".06"]):
+    ci.countriesInit()
+    outputPath = dp.getOutputDir(indexPath)
+    res     = findAllPatterns(indexPath, outputPath, dropCols, patternInterval, fixYears = fixYears) 
+    pattsDF = res[0]
+    if len(res) > 1:
+        dumpDF = res[1]
+    
+    return res
 
 def pattsToDashDF(df):
-    #"""
-    #This function takes in a dataframe (df) and returns a dataframe (dashDF) with a summary of all patterns in the input
-    #dataframe along with various indicators such as the countries involved in the pattern, the pattern length, the rank of
-    #the pattern, the number of indicators and the indicators themselves, as well as dictionary containing the years of
-    #pattern occurrence and the count of patterns for each year.
-    #
-    #Args:
-    #df: a pandas dataframe containing patterns
-    #
-    #Returns:
-    #dashDF: a pandas dataframe summarizing all patterns and indicators
-    #"""
+    """
+        This function takes in a dataframe (df) and returns a dataframe (dashDF) with a summary of all patterns in the input
+        dataframe along with various indicators such as the countries involved in the pattern, the pattern length, the rank of
+        the pattern, the number of indicators and the indicators themselves, as well as dictionary containing the years of
+        pattern occurrence and the count of patterns for each year.
+    
+        Args:
+            df: a pandas dataframe containing patterns
+    
+        Returns:
+            dashDF: a pandas dataframe summarizing all patterns and indicators
+    """
 
     # Display the start time of the function
     kh.displayTime(0)
@@ -102,8 +237,10 @@ def pattsToDashDF(df):
     kh.displayTime(0)
     return dashDF
 
-def findAllPatterns(path, dropCols, patternInterval, debug = False, fixYears = None):
-    kh.displayTime(0)
+def findAllPatterns(path, outPath, dropCols, patternInterval, debug = False, fixYears = None):
+    indexName = path.split("\\")[-1].split(".")[0]
+    
+    startTime = kh.displayTime(0)
 
     df = dp.getDF(path)
 
@@ -163,8 +300,9 @@ def findAllPatterns(path, dropCols, patternInterval, debug = False, fixYears = N
                         patternLength.append(patt)
                     else:
                         haveDump = True
-                        #print("$$$$$$$ COULDN'T FIND PATTERN $$$$$$$")
-                        #print("Not enough data")
+                        print("$$$$$$$ COULDN'T FIND PATTERN $$$$$$$")
+                        print("Not enough data")
+                        
                         if res[1] == 1:
                             if country not in list(dumpDF["Country"]):
                                 print("C1:", country, "- Index:", index, "- PattLength:", patt)
@@ -185,12 +323,19 @@ def findAllPatterns(path, dropCols, patternInterval, debug = False, fixYears = N
     for i in range(len(allLists)):
         mainDF[colNames[i]] = allLists[i]
     
-    mainDF.to_csv("DF.csv")
-    kh.displayTime(1)
+    mainDF.to_csv(outPath + indexName + "_PATTERNS_DF.csv")
+    endTime = kh.displayTime(1)
+
+    print("START TIME")
+    print(startTime)
+    print("END TIME")
+    print(endTime)
+    print("DIFFERENCE")
+    print(endTime - startTime)
 
     if haveDump:
-        dumpDF.to_csv("dumped.csv")
-        return [mainDF, dumpDF]
+        dumpDF.to_csv(outPath + indexName + "_DUMPED_COUNTRIES.csv")
+        return [mainDF, dumpDF, endTime - startTime]
     return mainDF
 
 def findPattern2Countries(path, names, index, patternLen, interval = None, dropCols = None, debug = False):
@@ -243,8 +388,8 @@ def recognizePattern2Countries(DF1, DF2, patternLength, interval = None, debug =
     res1 = dp.verdictOnNaNs(DF1, patternLength)
     res2 = dp.verdictOnNaNs(DF2, patternLength)
 
-    print(list(DF1)[0], res1)
-    print(list(DF2)[0], res2)
+    #print(list(DF1)[0], res1)
+    #print(list(DF2)[0], res2)
 
     if (res1 and res2):
         if interval is not None and len(interval) == 4:
@@ -268,26 +413,26 @@ def recognizePattern2Countries(DF1, DF2, patternLength, interval = None, debug =
         country2_motif_index = res[2]
         country1Arr          = res[3]
         country2Arr          = res[4]
-        country1SEQ = []
-        for i in country1Arr:
-            country1SEQ.append(i[0])
-        country2SEQ = []
-        for i in country2Arr:
-            country2SEQ.append(i[0])
-        pattern, match       = pf.getMatchingDFs([country1SEQ, DF1], [country2SEQ, DF2], debug = debug)
 
-        ## cosmetics
-        #if (debug):
-        #    plt.style.use('https://raw.githubusercontent.com/TDAmeritrade/stumpy/main/docs/stumpy.mplstyle')
-        #    fig1 = viz.plot1([list(DF1.iloc[:, 0]), DF1, name1, alpha1, color1], [list(DF2.iloc[:, 0]), DF2, name2, alpha2, color2])
-        #    fig2 = viz.plot2([DF1, alpha1, name1, color1], [DF2, alpha2, name2, color2], index_full)
-        #    viz.text1(country1_mp, country1_motif_index)
-        #    fig3 = viz.plot3(country1_motif_index, country1_mp)  
-        #    viz.text2(country1_mp, name1, name2) 
-        #    fig4 = viz.plot4([country1Arr, name1, color1], [country2Arr, name2, color2], index_full)
-        #    fig5 = viz.plot5([pattern, alpha1, name1, color1], [match, alpha2, name2, color2], index_full)
-        
-        return [True, pattern, match]
+        ## Pattern not found: Matrix Profile has 'inf' and '-1' values for country 1
+        if len(country1Arr) == 0:
+            return [False, 1, DF1]
+
+        ## Pattern not found: Matrix Profile has 'inf' and '-1' values for country 2
+        elif len(country2Arr) == 0:
+            return [False, 2, DF2]
+
+        ## Pattern found, get matching dataframes
+        else:
+            country1SEQ = []
+            for i in country1Arr:
+                country1SEQ.append(i[0])
+            country2SEQ = []
+            for i in country2Arr:
+                country2SEQ.append(i[0])
+            pattern, match = pf.getMatchingDFs([country1SEQ, DF1], [country2SEQ, DF2], debug = debug)
+            return [True, pattern, match]
+    
     else:
         if(not res1):
             return [False, 1, DF1]

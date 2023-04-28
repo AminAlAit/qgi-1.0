@@ -1,0 +1,198 @@
+async function plotQuantBar(vizWrapper,dataImport){const barContainer=vizWrapper.append('div').attr('class','bar-plot-container')
+const barWrapper=barContainer.append('svg').attr("viewBox",`0 0 60 24`).attr('height','650px').attr('width','343px').attr('preserveAspectRatio','xMinYMin')
+dataImport=dataImport.filter(row=>row.geo_name!=="District of Columbia")
+const years=getAvailableYears(dataImport)
+let latestYear=Math.max(...years)
+let latestData=dataImport.filter(row=>parseFloat(row.data_year)===latestYear)
+const mainObject=generateMainBarObj([latestData])
+const metricName=Object.keys(mainObject)[0]
+const metricDescription=dataImport[0].metric_description
+const sourceName=dataImport[0].source
+let metricUnit;if(dataImport[0].metric_unit===undefined){metricUnit=""}else{metricUnit=dataImport[0].metric_unit}
+let metricTop=mainObject[metricName][0].Top10
+let metricLast=mainObject[metricName][1].Last10
+let metricType=mainObject[metricName][2].dataType
+let sortOrder=mainObject[metricName][3].sortOrder
+const margin={top:10,right:4,bottom:4,left:4},width=60-margin.left-margin.right,height=115-margin.top-margin.bottom;let bounds=barWrapper.append('g').attr('class','bar-plot-bound').attr('transform',`translate(${margin.left},${margin.top})`)
+let maxTop=d3.max(metricTop.map(row=>parseFloat(row.data)))
+let minTop=d3.min(metricTop.map(row=>parseFloat(row.data)))
+let maxLast=d3.max(metricLast.map(row=>parseFloat(row.data)))
+let minLast=d3.min(metricLast.map(row=>parseFloat(row.data)))
+let xScale;let posValue=parseFloat(metricTop[0].data);if(sortOrder==="asc"){xScale=d3.scaleLinear().domain([0,Math.max(maxLast,Math.abs(minTop))]).range([0,width])}else{xScale=d3.scaleLinear().domain([0,Math.max(maxTop,Math.abs(minLast))]).range([0,width])
+posValue=parseFloat(metricTop[9].data);}
+let yScale=d3.scaleBand().range([0,height]).domain(metricTop.map(row=>row.geo_name)).padding(.6)
+let XposChange=xScale(Math.min(0,posValue))
+if(XposChange<0&&XposChange>-6){XposChange=-20}
+let bars=bounds.selectAll('rect').data(metricTop).enter().append('rect').attr('id',d=>`bar-${d.geo_name.replaceAll(' ','-').replaceAll("'","")}`).attr("y",d=>yScale(d.geo_name)).attr("x",d=>xScale(Math.min(0,d.data))-XposChange).attr('height',yScale.bandwidth()+1.5).attr('width',d=>xScale(Math.abs(d.data))).attr("fill",d=>{if(d.data<0){return"#C76028"}
+else{return"#1e637a"}})
+function plotValues(d,type){if(type=="Dollars"){return dollarNumFormatter(d)+" "+metricUnit}else if(type=="Percentage"){return parseFloat(parseFloat(d).toFixed(2))+"%"}else if(metricUnit==='ft'&&geoLevel==='us_state'){return feetToFeetAnInches(parseFloat(d))}else{return numFormatter(d)+" "+metricUnit}}
+let valuesLabel=bounds.selectAll('text').data(metricTop).enter().append('text').attr('class','bar-category-value').attr('id',d=>`bar-value-${d.geo_name.replaceAll(' ','-').replaceAll("'","")}`).attr('y',d=>yScale(d.geo_name)+yScale.bandwidth()).attr("x",d=>{if(d.data>=0){return xScale(d.data)-XposChange-.5}else{return xScale(d.data)-XposChange+.5}}).attr('text-anchor',d=>{if(d.data>=0){return'end'}else{return"start"}}).style('fill','white').text(d=>plotValues(d.data,metricType))
+function positionValueLabel(){let thisNode=d3.select(this)
+let labelX=thisNode.node().getBBox().x
+let labelWidth=thisNode.node().getBBox().width
+let thisBarId=thisNode.attr('id').replace('bar-value-','bar-')
+let thisBarNode=d3.select(`#${thisBarId}`)
+let barX=thisBarNode.node().getBBox().x
+let barWidth=thisBarNode.node().getBBox().width
+if(thisNode.datum().data<0){if(barWidth-labelWidth<=0){thisNode.attr("x",d=>xScale(d.data)-.5-XposChange).attr('text-anchor','end').style('fill','#1D0D32')}}
+if(thisNode.datum().data>=0){if(labelX-barX<0.5){thisNode.attr("x",d=>xScale(d.data)+.5-XposChange).attr('text-anchor','start').style('fill','#1D0D32')}}}
+d3.selectAll('.bar-category-value').each(positionValueLabel)
+let stateLabelBound=barWrapper.append('g').attr('class','bar-state-label-bound').attr('transform',`translate(${margin.left},${margin.top})`)
+let stateLabel=stateLabelBound.selectAll('text').data(metricTop).enter().append('text').attr('class','bar-category-name').style('text-transform','initial').attr('y',d=>yScale(d.geo_name)-.8).attr('x',xScale(0)-XposChange).text(d=>d.geo_name.replace('eSwatini','Eswatini')).attr('text-anchor',d=>{if(d.data<0){return"end"}
+else{return"start"}})
+let metricTitle=barWrapper.append('text').attr('class','bar-metric-title').attr('x',margin.left).attr('y',margin.top).text(capitalizeText(metricName))
+const topButton=d3.select('#top-button').classed('bar-button-selected',true)
+const lastButton=d3.select('#last-button')
+d3.selectAll('.top-last-button').on('click',barTrigger)
+function barTrigger(){let element=d3.select(this)
+let paneType=element.select('span.bar-button-label').text().replace(' ','')
+let vizStatus=element.classed('bar-button-selected')
+if(!vizStatus){d3.select('.bar-button-selected span.bar-button-label').style('color','#98A0B3')
+d3.select('.bar-button-selected span.material-symbols-outlined').style('color','#98A0B3')
+element.select('span.bar-button-label').style('color','#1D0D32')
+element.select('span.material-symbols-outlined').style('color','#EA344F')
+d3.select('.bar-button-selected').classed('bar-button-selected',false)
+element.classed('bar-button-selected',true)
+updateBar(paneType,mainObject[metricName])}}
+function updateBar(pane,data){let metricData=data.filter(obj=>Object.keys(obj).includes(pane))[0][pane]
+let yScale;let posValue=parseFloat(metricData[0].data);if(sortOrder==="asc"&&pane==="Last10"){yScale=d3.scaleBand().range([height,0]).domain(metricData.map(row=>row.geo_name)).padding(.6)
+posValue=parseFloat(metricData[9].data)}else if(sortOrder==="asc"&&pane==="Top10"){yScale=d3.scaleBand().range([0,height]).domain(metricData.map(row=>row.geo_name)).padding(.6)}else if(sortOrder==="desc"&&pane=='Last10'){yScale=d3.scaleBand().range([height,0]).domain(metricData.map(row=>row.geo_name)).padding(.6)}else if(sortOrder==="desc"&&pane=='Top10'){yScale=d3.scaleBand().range([0,height]).domain(metricData.map(row=>row.geo_name)).padding(.6)
+posValue=parseFloat(metricData[9].data)}
+let XposChange=xScale(Math.min(0,posValue))
+if(XposChange<0&&XposChange>-14){XposChange=-20}
+bars=bounds.selectAll('rect').data(metricData).join().attr('id',d=>`bar-${d.geo_name.replaceAll(' ','-').replaceAll("'","")}`).attr("y",d=>yScale(d.geo_name)).attr("x",d=>xScale(Math.min(0,d.data))-XposChange).attr('height',yScale.bandwidth()+1.5).attr('width',d=>xScale(Math.abs(d.data))).attr("fill",d=>{if(d.data<0){return"#C76028"}
+else{return"#1e637a"}})
+stateLabel=stateLabelBound.selectAll('text').data(metricData).join().attr('y',d=>yScale(d.geo_name)-.8).attr('x',xScale(0)-XposChange).text(d=>d.geo_name.replace('eSwatini','Eswatini')).attr('text-anchor',d=>{if(d.data<0){return"end"}
+else{return"start"}})
+valuesLabel=bounds.selectAll('text').data(metricData).join().attr('class','bar-category-value').attr('id',d=>`bar-value-${d.geo_name.replaceAll(' ','-').replaceAll("'","")}`).attr('y',d=>yScale(d.geo_name)+yScale.bandwidth()).attr("x",d=>{if(d.data>=0){return xScale(d.data)-XposChange-.5}else{return xScale(d.data)-XposChange+.5}}).attr('text-anchor',d=>{if(d.data>=0){return'end'}else{return"start"}}).style('fill','white').text(d=>plotValues(d.data,metricType))
+function updatePositionValueLabel(){let thisNode=d3.select(this)
+let labelX=thisNode.node().getBBox().x
+let labelWidth=thisNode.node().getBBox().width
+let thisBarId=thisNode.attr('id').replace('bar-value-','bar-')
+let thisBarNode=d3.select(`#${thisBarId}`)
+let barX=thisBarNode.node().getBBox().x
+let barWidth=thisBarNode.node().getBBox().width
+if(thisNode.datum().data<0){if(barWidth-labelWidth<=0){thisNode.attr("x",d=>xScale(d.data)-.5-XposChange).attr('text-anchor','end').style('fill','#1D0D32')}}
+if(thisNode.datum().data>=0){if(labelX-barX<0.5){thisNode.attr("x",d=>xScale(d.data)+.5-XposChange).attr('text-anchor','start').style('fill','#1D0D32')}}}
+d3.selectAll('.bar-category-value').each(updatePositionValueLabel)}
+bounds.selectAll('rect').on('mouseenter',highlightMap).on('mouseleave',unhighlightMap)
+let originalStateMapColor;function highlightMap(){d3.select(this).attr('fill','#EA344F')
+let panelActive=d3.select('.main-pane-control-button-active').text().trim()
+if(panelActive==='Map'){let nodeDat=d3.select(this).datum()
+let stateMapId="#"+"map-"+nodeDat.geo_name.replaceAll(' ','-').replaceAll("'","")
+let stateMapElement=d3.select(stateMapId)
+try{originalStateMapColor=stateMapElement.attr('style').replace('fill:','').replace(';','')}catch{}
+stateMapElement.style('fill','#EA344F94')}}
+function unhighlightMap(){let nodeDat=d3.select(this).datum()
+if(nodeDat.data<0){d3.select(this).attr('fill','#C76028')}else{d3.select(this).attr('fill','#1e637a')}
+let panelActive=d3.select('.main-pane-control-button-active').text().trim()
+if(panelActive==='Map'){let stateMapId="#"+"map-"+nodeDat.geo_name.replaceAll(' ','-').replaceAll("'","")
+let stateMapElement=d3.select(stateMapId)
+stateMapElement.style('fill',originalStateMapColor)}}
+let descriptionIcon=barWrapper.append('text').attr('class','material-symbols-outlined map-metric-description-icon').attr('x',margin.left+metricTitle.node().getBBox().width+.4).attr('y',margin.top).style('font-size','3px').style('fill','#94B0FF').text('help')
+let tooltip=await appendMetricDescriptionTooltip('#component1','bar')
+let tooltipMetricName=tooltip.select('.main-description-bar-tooltip-metric-name').text(capitalizeText(metricName))
+let tooltipMetricDescription=tooltip.select('.main-description-bar-tooltip-description').text(metricDescription)
+let tooltipSource=tooltip.select('.main-description-bar-tooltip-source').text(`Source: ${sourceName}`)
+function positionTooltip(){let tooltipWidth=tooltip.node().getBoundingClientRect().width
+let component1BB=d3.select('#component1').node().getBoundingClientRect()
+let tooltipX;let tooltipY;if(window.innerWidth<600){tooltipX=window.innerWidth/2.4-tooltipWidth/2
+tooltipY=descriptionIcon.node().getBoundingClientRect().y-component1BB.top+12}else{tooltipX=descriptionIcon.node().getBoundingClientRect().x-component1BB.left-tooltipWidth+5
+tooltipY=descriptionIcon.node().getBoundingClientRect().y-component1BB.top+12}
+tooltip.style("transform",`translate(
+            ${tooltipX}px,
+            ${tooltipY}px)
+        `)}
+positionTooltip()
+window.addEventListener("resize",positionTooltip);descriptionIcon.on('mouseenter',showDescription).on('mouseleave',hideDescription)
+function showDescription(){positionTooltip()
+tooltip.style('opacity','1')}
+function hideDescription(){tooltip.style('opacity','0')}}
+async function plotQualiBar(vizWrapper,dataImport){const barContainer=vizWrapper.append('div').attr('class','bar-plot-container')
+let barWrapper;if(geoLevel==='us_state'){barWrapper=barContainer.append('svg').attr("viewBox",`0 0 60 24`).attr('height','606px').attr('width','343px').attr('preserveAspectRatio','xMinYMin')}else{barWrapper=barContainer.append('svg').attr("viewBox",`0 0 60 24`).attr('height','650px').attr('width','343px').attr('preserveAspectRatio','xMinYMin')}
+dataImport=dataImport.filter(row=>row.geo_name!=="District of Columbia")
+const years=getAvailableYears(dataImport)
+let latestYear=Math.max(...years)
+let latestData=dataImport.filter(row=>parseFloat(row.data_year)===latestYear)
+const mainObject=generateMainMapObj([latestData])
+let metricName=Object.keys(mainObject)[0]
+const metricDescription=dataImport[0].metric_description
+const sourceName=dataImport[0].source
+let metricData=mainObject[metricName][0]
+let metricType=mainObject[metricName][1].dataType
+let uniqueData=countUnique(Object.values(metricData))
+let barData=Object.keys(uniqueData).map(key=>{return{'category':key,'count':uniqueData[key]}})
+if(['Ordinal','Diverging Ordinal'].includes(metricType)){barData=barData.sort((a,b)=>{return-extractParenthesesValue(b.category)-
+-extractParenthesesValue(a.category)})}else{barData=barData.sort((a,b)=>b.count-a.count)}
+if(geoLevel==="us_state"){if(Object.keys(metricData).length!=50){barData.push({'category':'Not Available','count':50-Object.keys(metricData).length})}}else{if(Object.keys(metricData).length!=228){barData.push({'category':'Not Available','count':228-Object.keys(metricData).length})}}
+let margin={top:9,right:0,bottom:0,left:2},width=24-margin.left-margin.right
+height=60-margin.top-margin.bottom
+let barBounds=await createBounds(barWrapper,margin.left,margin.top+4,'bar-plot-bound')
+let maxValue=d3.max(barData.map(row=>row.count))
+let xScale=d3.scaleLinear().domain([0,maxValue]).range([0,width])
+let yScale=d3.scaleBand().range([0,60]).domain(barData.map(d=>d.category))
+let colorScale=createColorScale(metricType,metricData)
+function fillColor(d,type,scale){if(['Binary','Nominal'].includes(type)){if(d.category==="Not Available"){return"#e6e6e6"}else{return scale(d.category)}}else if(['Ordinal','Diverging Ordinal'].includes(type)){if(d.category==="Not Available"){return"#e6e6e6"}else{return scale(extractParenthesesValue(d.category))}}}
+let metricTitle=barWrapper.append('text').attr('class','bar-metric-title').attr('x',margin.left).attr('y',margin.top+2).text(capitalizeText(metricName))
+let bars=barBounds.selectAll('rect').data(barData).enter().append('rect').attr('class','category-bars').attr('id',d=>{if(['Ordinal','Diverging Ordinal'].includes(metricType)){if(d.category==='Not Available'){return'category-bars-Not-Available'}
+return`category-bars-${extractParenthesesValue(d.category)}`}else{return`category-bars-${d.category.replaceAll(' ','-')}`}}).attr('y',(d,i)=>{if(i===0){return 4}else{return 4+(i*10)}}).attr('x',xScale(0)).attr('height','5px').attr('width',d=>xScale(d.count)).attr('fill',d=>fillColor(d,metricType,colorScale))
+let valuesLabel=barBounds.selectAll('text').data(barData).enter().append('text').attr('class','bar-category-value').attr('y',(d,i)=>{if(i===0){return 7.4}else{return 7.4+(i*10)}}).attr('x',d=>xScale(d.count)-.8).attr('text-anchor','end').attr('fill','white').text(d=>d.count)
+function updatePositionValueLabel(){let thisNode=d3.select(this)
+let labelX=thisNode.node().getBBox().x
+if(labelX<0.5){thisNode.attr("x",d=>xScale(d.count)+.8).attr('text-anchor','start').style('fill','#1D0D32')}}
+d3.selectAll('.bar-category-value').each(updatePositionValueLabel)
+let barLabelBound=await createBounds(barWrapper,margin.left,margin.top+4,'bar-label-bound')
+let categoryLabel=barLabelBound.selectAll('text').data(barData).enter().append('text').attr('class','bar-category-name').attr('y',(d,i)=>{if(i===0){return 3}else{return 3+(i*10)}}).attr('x',d=>xScale(0)).text(d=>{if(['Ordinal','Diverging Ordinal']){return capitalizeText(removeParenthesesValue(d.category))}else{return capitalizeText(d.category)}})
+if(metricDescription.includes('- Categories')){categoryLabel.each(function(){let categoryIcon=barLabelBound.append('text').attr('class','material-symbols-outlined map-category-description-icon').attr('alt',d3.select(this).text()).attr('x',d3.select(this).node().getBBox().x+
+d3.select(this).node().getBBox().width+.3).attr('y',d3.select(this).node().getBBox().y+2).style('font-size','2px').style('fill','#94B0FF').text('help')})}
+resizeBar()
+window.addEventListener("resize",resizeBar);function resizeBar(){let boundsClientBB=barBounds.node().getBoundingClientRect()
+let title=metricTitle.node().getBoundingClientRect()
+let wrappeClientBB=barWrapper.node().getBoundingClientRect()
+let size=boundsClientBB.bottom-title.top+
+((title.top-wrappeClientBB.top)*2)
+if(window.innerWidth<600){d3.select('.top-last-container').style('display','none')
+d3.select('.bar-plot-container svg').style('height',size)
+d3.select('.shield-db-component-1').style('height','fit-content')}else{d3.select('.top-last-container').style('display','flex')}}
+bars.on('mouseenter',onMouseEnter).on('mouseleave',onMouseLeave)
+function onMouseEnter(event,datum){let category=datum.category
+let categoryStates=Object.keys(metricData).filter(key=>metricData[key]===category)
+if(category!=="Not Available"){categoryStates.forEach(state=>{d3.select(`#map-${state.replaceAll(' ','-').replaceAll("'","")}`).style('opacity',.7).style('stroke','black')})}else{let notAvailableNodes;if(geoLevel==="us_state"){notAvailableNodes=stateNamesArray.filter(state=>!Object.keys(metricData).includes(state)).filter(state=>state!=="District of Columbia")}else{notAvailableNodes=countryNamesArray.filter(country=>!Object.keys(metricData).includes(country))}
+notAvailableNodes.forEach(geo=>{d3.select(`#map-${geo.replaceAll(' ','-').replaceAll("'","")}`).style('opacity',.7).style('stroke','black')})}
+d3.select(this).attr('opacity',.7).attr('stroke','black').attr('stroke-width','.2px')}
+function onMouseLeave(event,datum){let category=datum.category
+let categoryStates=Object.keys(metricData).filter(key=>metricData[key]===category)
+if(category!=="Not Available"){categoryStates.forEach(state=>{d3.select(`#map-${state.replaceAll(' ','-').replaceAll("'","")}`).style('opacity',1).style('stroke','white')})}else{let notAvailableNodes;if(geoLevel==="us_state"){notAvailableNodes=stateNamesArray.filter(state=>!Object.keys(metricData).includes(state)).filter(state=>state!=="District of Columbia")}else{notAvailableNodes=countryNamesArray.filter(country=>!Object.keys(metricData).includes(country))}
+notAvailableNodes.forEach(geo=>{d3.select(`#map-${geo.replaceAll(' ','-').replaceAll("'","")}`).style('opacity',1).style('stroke','white')})}
+d3.select(this).attr('opacity',1).attr('stroke',null)}
+if(window.innerWidth<600){d3.select('.top-last-container').style('display','none')}
+let descriptionIcon=barWrapper.append('text').attr('class','material-symbols-outlined map-metric-description-icon').attr('x',margin.left+metricTitle.node().getBBox().width+.4).attr('y',margin.top+2).style('font-size','3px').style('fill','#94B0FF').text('help')
+let tooltip=await appendMetricDescriptionTooltip('#component1','bar')
+descriptionIcon.on('mouseenter',showMetricDescription).on('mouseleave',hideMetricDescription)
+function showMetricDescription(){positionTooltip(d3.select(this))
+let tooltipMetricName=tooltip.select('.main-description-bar-tooltip-metric-name').text(capitalizeText(metricName))
+let tooltipMetricDescription=tooltip.select('.main-description-bar-tooltip-description').text(metricDescription.replace(/- Categories(.*)/,''))
+let tooltipSource=tooltip.select('.main-description-bar-tooltip-source').style('display','initial').text(`Source: ${sourceName}`)
+tooltip.style('opacity','1')}
+function hideMetricDescription(){tooltip.style('opacity','0')}
+if(metricDescription.includes('- Categories')){d3.selectAll('.map-category-description-icon').on('mouseenter',showCategoryDescription).on('mouseleave',hideCategorycDescription)}
+function showCategoryDescription(){positionTooltip(d3.select(this))
+let categoryName=d3.select(this).attr('alt')
+let categoryDescription=metricDescription.split(' - Categories:').pop().split(';').filter(category=>category.toLowerCase().includes(categoryName.toLowerCase()))[0].replace(`${categoryName} -`,"").trim()
+let tooltipCategoryName=tooltip.select('.main-description-bar-tooltip-metric-name').text(capitalizeText(categoryName))
+let tooltipCategoryDescription=tooltip.select('.main-description-bar-tooltip-description').text(categoryDescription)
+let tooltipSource=tooltip.select('.main-description-bar-tooltip-source').style('display','none')
+tooltip.style('opacity','1')}
+function hideCategorycDescription(){tooltip.style('opacity','0')}
+function positionTooltip(thisNode){let tooltipWidth=tooltip.node().getBoundingClientRect().width
+let component1BB=d3.select('#component1').node().getBoundingClientRect()
+let tooltipX;let tooltipY;let desktopExtraPosX;let desktopExtraPosY;if(thisNode.attr('class').includes('map-metric-description-icon')){desktopExtraPosX=5
+desktopExtraPosY=12}else{desktopExtraPosX=5
+desktopExtraPosY=9}
+if(window.innerWidth<600){tooltipX=window.innerWidth/2.4-tooltipWidth/2
+tooltipY=thisNode.node().getBoundingClientRect().y-component1BB.top+12}else{tooltipX=thisNode.node().getBoundingClientRect().x-component1BB.left-tooltipWidth+desktopExtraPosX
+tooltipY=thisNode.node().getBoundingClientRect().y-component1BB.top+desktopExtraPosY}
+tooltip.style("transform",`translate(
+            ${tooltipX}px,
+            ${tooltipY}px)
+        `)}}

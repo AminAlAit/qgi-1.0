@@ -1,0 +1,95 @@
+async function makeBars(dataImport,contentContainer){let geoAttr=contentContainer.attr('id').replaceAll('description-state-content-container-','')
+let geoName=d3.select(`#description-state-name-container-${geoAttr} h3`).text()
+let geoMetrics=[]
+d3.selectAll(`#description-state-ban-metric-container-${geoAttr} .description-state-ban-metric-name`).each(function(){geoMetrics.push(d3.select(this).text().replace('help','').trim())})
+const barNameMetrics=dataImport.map(data=>{if(['Integer','Decimal','Dollars','Percentage'].includes(data[0].metric_data_type)){return data[0].metric_name.trim()}}).filter(metric=>metric!==undefined).filter(metric=>geoMetrics.includes(metric))
+if(barNameMetrics.length>0){let activeMetric=d3.select(`
+        .description-state-bar-metric-button-${geoAttr}-active p
+      `).text()
+let activeData=dataImport.filter(dataset=>{return dataset[0].metric_name===activeMetric})[0]
+let years=getAvailableYears(activeData)
+let latestYear=Math.max(...years)
+activeData=activeData.filter(row=>parseFloat(row.data_year)===latestYear)
+if(activeData[0].metric_sort_order==='asc'){activeData=activeData.sort((a,b)=>parseFloat(a.data)-parseFloat(b.data))}else{activeData=activeData.sort((a,b)=>parseFloat(b.data)-parseFloat(a.data))}
+const margin={top:0,right:0,bottom:40,left:0,}
+margin.width=530-margin.left-margin.right
+margin.height=340-margin.top-margin.bottom
+let barPlotContainer=d3.select(`#description-state-bar-plot-${geoAttr}`)
+let barWrapper=barPlotContainer.append('svg').attr('class','description-state-bar-plot-canvas').attr('id',`description-state-bar-plot-canvas-${geoAttr}`).attr("viewBox",`0 0 530 360`).attr("width",530).attr("height",360).attr('preserveAspectRatio','xMinYMin')
+let max=d3.max(activeData.map(row=>parseFloat(row.data)))
+let min=d3.min(activeData.map(row=>parseFloat(row.data)))
+let xScale=d3.scaleBand().range([0,margin.width]).domain(activeData.map(row=>row.geo_name)).padding(.2);let yPosChange=0;if(min<0){if((Math.abs(min)+max>80)){yPosChange=95}else{yPosChange=40}}
+let yScale=d3.scaleLinear().domain([0,Math.max(max,Math.abs(min))]).range([margin.height-yPosChange,0]);let scaleDiff=(margin.height-yPosChange-yScale(Math.abs(max)))-
+(margin.height-yPosChange-yScale(Math.abs(min)))
+let barBounds;if(scaleDiff<0){barBounds=await createBounds(barWrapper,0,scaleDiff+1,'state-descriptions-bar-plot-bound')}else{barBounds=await createBounds(barWrapper,0,1,'state-descriptions-bar-plot-bound')}
+let bars=barBounds.selectAll("rect").data(activeData).enter().append("rect").attr('class','state-descriptions-bar-plot-bars').attr('id',d=>`state-descriptions-bar-plot-bars-${geoAttr}-${
+d.geo_name.replaceAll(' ','-').replaceAll("'",'')
+}`).attr("x",d=>xScale(d.geo_name)).attr("y",d=>{return yScale(Math.max(0,parseFloat(d.data)))}).attr("width",xScale.bandwidth()).attr("height",d=>{return margin.height-yPosChange-yScale(Math.abs(parseFloat(d.data)))}).style("fill",d=>{if(parseFloat(d.data)<0){if(geoName===d.geo_name){return'#C76028'}else{return"#C7602820"}}else{if(geoName===d.geo_name){return'#226E87'}else{return'#396DFF20'}}})
+function positionRankLabel(scaleDiff,marginBottom,yScale){if(scaleDiff<0){return yScale(0)+260}else{return yScale(0)+marginBottom/2}}
+let rankingLabelInit=barBounds.append('text').attr('class','state-descriptions-bar-plot-bars-ranking-label').attr('id','state-descriptions-bar-plot-bars-ranking-label-init').attr('x','0').attr('y',positionRankLabel(scaleDiff,margin.bottom,yScale)).text('Rank')
+let geoRank=getGeoRank(activeData,geoName)
+let rankingLabelRanking=barBounds.append('text').attr('class','state-descriptions-bar-plot-bars-ranking-label').attr('id','state-descriptions-bar-plot-bars-ranking-label-rank').attr('x',rankingLabelInit.node().getBBox().width+3).attr('y',positionRankLabel(scaleDiff,margin.bottom,yScale)).text(`#${geoRank}`).style('fill',function(){let geoData=activeData.filter(row=>row.geo_name===geoName)[0].data
+geoData=parseFloat(geoData)
+if(geoData<0){return'#C76028'}else{return'#226E87'}})
+let rankingLabelEnd=barBounds.append('text').attr('class','state-descriptions-bar-plot-bars-ranking-label').attr('id','state-descriptions-bar-plot-bars-ranking-label-end').attr('x',rankingLabelRanking.node().getBBox().x+
+rankingLabelRanking.node().getBBox().width+3).attr('y',positionRankLabel(scaleDiff,margin.bottom,yScale))
+if(geoLevel==='us_state'){rankingLabelEnd.text('/'+activeData.length)}else{rankingLabelEnd.text('/224')}
+bars.on('mouseenter',showDescriptionBarTooltip).on('mouseleave',hideDescriptionBarTooltip).on('mousemove',positionTooltip)
+const tooltip=d3.select('.bar-description-tooltip')
+function positionTooltip(event,datum){let tooltipWidth=tooltip.node().getBoundingClientRect().width
+let yPos=event.pageY
+let xPos=event.pageX
+if(event.pageX>window.innerWidth/2){xPos=xPos-tooltipWidth}
+tooltip.style("transform",`translate(
+              ${xPos}px,
+              ${yPos}px)
+          `)}
+function showDescriptionBarTooltip(event,datum){tooltip.style('opacity','1')
+d3.select('.bar-description-tooltip-geo-name').text(datum.geo_name)
+d3.select('.bar-description-tooltip-metric-value').text(plotValues(datum.data,datum.metric_data_type,datum.metric_unit))
+if(datum.data<0){d3.select('.bar-description-tooltip-metric-value').style('background-color','#C76028')}else{if(datum.geo_name===geoName){d3.select('.bar-description-tooltip-metric-value').style('background-color','#226E87')}else{d3.select('.bar-description-tooltip-metric-value').style('background-color','#396DFF')}}
+let geoRank=getGeoRank(activeData,datum.geo_name)
+d3.select('.bar-description-tooltip-rank-value').text(` #${geoRank}`)
+if(datum.data<0){d3.select('.bar-description-tooltip-rank-value').style('color','#C76028')}else{if(geoName===datum.geo_name){d3.select('.bar-description-tooltip-rank-value').style('color','#226E87')}else{d3.select('.bar-description-tooltip-rank-value').style('color','#396DFF')}}
+if(geoLevel==='us_state'){d3.select('.bar-description-tooltip-rank-total').text('/'+activeData.length)}else{d3.select('.bar-description-tooltip-rank-total').text(' /224')}
+d3.select(this).style('outline','1px solid black').style('opacity','.7')}
+function hideDescriptionBarTooltip(event,datum){tooltip.style('opacity','0')
+d3.select(this).style('outline',null).style('opacity','1')}
+d3.selectAll(`#description-state-bar-metric-button-${geoAttr}`).on('click',updateBars)
+function updateBars(){let status=d3.select(this).attr('class').includes('active')
+if(!status){d3.select(`.description-state-bar-metric-button-${geoAttr}-active`).classed(`description-state-bar-metric-button-${geoAttr}-active`,false).style('border','1px solid #98A0B3').select('div').style('background-color','#98A0B3')
+d3.select(this).classed(`description-state-bar-metric-button-${geoAttr}-active`,true).style('border','1px solid #396DFF').select('div').style('background-color','#396DFF')
+activeMetric=d3.select(`
+            .description-state-bar-metric-button-${geoAttr}-active p
+          `).text()
+activeData=dataImport.filter(dataset=>{return dataset[0].metric_name===activeMetric})[0]
+years=getAvailableYears(activeData)
+latestYear=Math.max(...years)
+activeData=activeData.filter(row=>parseFloat(row.data_year)===latestYear)
+if(activeData[0].metric_sort_order==='asc'){activeData=activeData.sort((a,b)=>parseFloat(a.data)-parseFloat(b.data))}else{activeData=activeData.sort((a,b)=>parseFloat(b.data)-parseFloat(a.data))}
+let max=d3.max(activeData.map(row=>parseFloat(row.data)))
+let min=d3.min(activeData.map(row=>parseFloat(row.data)))
+xScale=d3.scaleBand().range([0,margin.width]).domain(activeData.map(row=>row.geo_name)).padding(.2);yPosChange=0;if(min<0){if((Math.abs(min)+max>80)){yPosChange=95}else{yPosChange=40}}
+yScale=d3.scaleLinear().domain([0,Math.max(max,Math.abs(min))]).range([margin.height-yPosChange,0]);scaleDiff=(margin.height-yPosChange-yScale(Math.abs(max)))-
+(margin.height-yPosChange-yScale(Math.abs(min)))
+if(scaleDiff<0){barBounds=barBounds.style('transform',`translate(0px,${scaleDiff+1}px)`)}else{barBounds=barBounds.style('transform',`translate(0px,1px)`)}
+bars=barBounds.selectAll('rect').data(activeData).join('rect').transition().ease(d3.easeLinear).attr('class','state-descriptions-bar-plot-bars').attr('id',d=>`state-descriptions-bar-plot-bars-${geoAttr}-${
+d.geo_name.replaceAll(' ','-').replaceAll("'",'')
+}`).attr("x",d=>xScale(d.geo_name)).attr("y",d=>{return yScale(Math.max(0,parseFloat(d.data)))}).attr("width",xScale.bandwidth()).attr("height",d=>{return margin.height-yPosChange-yScale(Math.abs(parseFloat(d.data)))}).style("fill",d=>{if(parseFloat(d.data)<0){if(geoName===d.geo_name){return'#C76028'}else{return"#C7602820"}}else{if(geoName===d.geo_name){return'#226E87'}else{return'#396DFF20'}}})
+geoRank=activeData.map(row=>{let rankArray={}
+rankArray[row.geo_name]=parseFloat(row.data)
+return rankArray})
+if(activeData[0].metric_sort_order==='asc'){geoRank=activeData.sort((a,b)=>parseFloat(a.data)-parseFloat(b.data)).map(row=>row.geo_name).indexOf(geoName)+1}else{geoRank=activeData.sort((a,b)=>parseFloat(b.data)-parseFloat(a.data)).map(row=>row.geo_name).indexOf(geoName)+1}
+rankingLabelInit=rankingLabelInit.attr('y',positionRankLabel(scaleDiff,margin.bottom,yScale))
+rankingLabelRanking=rankingLabelRanking.attr('y',positionRankLabel(scaleDiff,margin.bottom,yScale)).text(`#${geoRank}`).style('fill',function(){let geoData=activeData.filter(row=>row.geo_name===geoName)[0].data
+geoData=parseFloat(geoData)
+if(geoData<0){return'#C76028'}else{return'#226E87'}})
+rankingLabelEnd=rankingLabelEnd.attr('x',rankingLabelRanking.node().getBBox().x+
+rankingLabelRanking.node().getBBox().width+3).attr('y',positionRankLabel(scaleDiff,margin.bottom,yScale)).text('/'+activeData.length)
+barBounds.selectAll('rect').on('mouseover',null).on('mouseleave',null).on('mousemove',null).on('mouseenter',showDescriptionBarTooltip).on('mouseleave',hideDescriptionBarTooltip).on('mousemove',positionTooltip)}}}}
+function getGeoRank(data,geo){let geoRank=data.map(row=>{let rankArray={}
+rankArray[row.geo_name]=parseFloat(row.data)
+return rankArray})
+if(data[0].metric_sort_order==='asc'){geoRank=data.sort((a,b)=>parseFloat(a.data)-parseFloat(b.data)).map(row=>row.geo_name).indexOf(geo)+1}else{geoRank=data.sort((a,b)=>parseFloat(b.data)-parseFloat(a.data)).map(row=>row.geo_name).indexOf(geo)+1}
+return geoRank}
+function plotValues(d,type,unit){if(type=="Dollars"){if(unit===undefined){return dollarUS.format(d)}else{return dollarUS.format(d)+" "+unit}}else if(type=="Percentage"){return parseFloat(parseFloat(d).toFixed(2))+"%"}else{if(unit===undefined){return numUS.format(d)}else{if(unit==='ft'&&geoLevel==='us_state'){return feetToFeetAnInches(parseFloat(d))}else{return numUS.format(d)+" "+unit}}}}

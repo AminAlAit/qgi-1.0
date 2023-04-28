@@ -1,0 +1,1506 @@
+Year,Country,Quality of Life Index
+2012.01,Argentina,32.58
+2012.01,Australia,162.03
+2012.01,Austria,159.89
+2014.06,Argentina,74.39
+2012.01,Belgium,100.68
+2015.06,Argentina,92.79
+2012.01,Bosnia And Herzegovina,28.04
+2016.06,Argentina,137.33
+2012.01,Brazil,10.81
+2017.06,Argentina,119.71
+2012.01,Bulgaria,30.77
+2018.06,Argentina,130.41
+2012.01,Canada,164.99
+2019.06,Argentina,121.02
+2012.01,Chile,21.04
+2020.06,Argentina,114.21
+2012.01,China,-49.55
+2021.06,Argentina,104.31
+2012.01,Colombia,23.38
+2022.06,Argentina,110.14
+2012.01,Croatia,93.06
+2012.01,Czech Republic,88.14
+2012.01,Denmark,163.12
+2012.01,Egypt,-22.17
+2014.06,Australia,166.68
+2012.01,France,119.51
+2015.06,Australia,227.19
+2012.01,Germany,184.42
+2016.06,Australia,196.4
+2012.01,Greece,23.28
+2017.06,Australia,172.4
+2012.01,Hungary,48.74
+2018.06,Australia,192.41
+2012.01,India,44.01
+2019.06,Australia,189.73
+2012.01,Indonesia,37.22
+2020.06,Australia,185.03
+2012.01,Iran,-35.23
+2021.06,Australia,178.41
+2012.01,Ireland,125.14
+2022.06,Australia,190.72
+2012.01,Israel,118.25
+2012.01,Italy,49.65
+2012.01,Japan,130.52
+2014.06,Austria,160.72
+2012.01,Malaysia,65.31
+2015.06,Austria,214.62
+2012.01,Mexico,60.31
+2016.06,Austria,187
+2012.01,Netherlands,158.07
+2017.06,Austria,178.53
+2012.01,New Zealand,174.28
+2018.06,Austria,191.99
+2012.01,Norway,183.43
+2019.06,Austria,187.82
+2012.01,Pakistan,-3.05
+2020.06,Austria,181.68
+2012.01,Philippines,-3.77
+2021.06,Austria,176.36
+2012.01,Poland,60.63
+2022.06,Austria,178.06
+2020.06,Azerbaijan,102.69
+2012.01,Portugal,105.1
+2021.06,Azerbaijan,101.41
+2012.01,Romania,25.52
+2022.06,Azerbaijan,108.84
+2012.01,Russia,-7.39
+2012.01,Saudi Arabia,71.02
+2019.06,Bangladesh,69.3
+2012.01,Serbia,34.59
+2020.06,Bangladesh,66.29
+2012.01,Singapore,87.08
+2021.06,Bangladesh,64.54
+2012.01,Slovenia,121.94
+2022.06,Bangladesh,68.49
+2012.01,South Africa,83.59
+2014.06,Belarus,72.85
+2012.01,Spain,100.93
+2012.01,Sweden,171.72
+2018.06,Belarus,138.72
+2012.01,Switzerland,194.11
+2019.06,Belarus,137.86
+2012.01,Thailand,24.89
+2020.06,Belarus,133.52
+2012.01,Turkey,66.7
+2021.06,Belarus,107.15
+2012.01,Ukraine,-14.61
+2022.06,Belarus,109.6
+2012.01,United Arab Emirates,177.07
+2012.01,United Kingdom,110.09
+2012.01,United States,140.62
+2014.06,Belgium,128.68
+2013.01,Argentina,72.53
+2015.06,Belgium,161.2
+2013.01,Australia,165.8
+2016.06,Belgium,162.57
+2013.01,Austria,167.39
+2017.06,Belgium,147.51
+2013.01,Belgium,146.73
+2018.06,Belgium,164.58
+2013.01,Bosnia And Herzegovina,71.6
+2019.06,Belgium,160.81
+2013.01,Brazil,48.21
+2020.06,Belgium,149.75
+2013.01,Bulgaria,53.71
+2021.06,Belgium,148.18
+2013.01,Canada,186.03
+2022.06,Belgium,155.76
+2014.06,Bolivia,-1.48
+2013.01,Chile,72.56
+2013.01,China,31.5
+2013.01,Colombia,35.05
+2013.01,Croatia,88.86
+2014.06,Bosnia And Herzegovina,69.39
+2013.01,Czech Republic,122.18
+2015.06,Bosnia And Herzegovina,102.25
+2013.01,Denmark,182.29
+2016.06,Bosnia And Herzegovina,142.52
+2013.01,Ecuador,37.68
+2013.01,Egypt,7.59
+2018.06,Bosnia And Herzegovina,126.04
+2013.01,Estonia,154.95
+2019.06,Bosnia And Herzegovina,122.56
+2013.01,Finland,167.21
+2020.06,Bosnia And Herzegovina,123.05
+2013.01,France,151.36
+2021.06,Bosnia And Herzegovina,123.85
+2013.01,Georgia,35.74
+2022.06,Bosnia And Herzegovina,129.37
+2013.01,Germany,204.84
+2013.01,Greece,55.51
+2013.01,Hong Kong,94.27
+2014.06,Brazil,29.72
+2013.01,Hungary,85.59
+2015.06,Brazil,43.75
+2013.01,India,73.7
+2016.06,Brazil,94.75
+2013.01,Indonesia,-12.54
+2017.06,Brazil,89.6
+2013.01,Iran,-6.96
+2018.06,Brazil,100.32
+2013.01,Ireland,149.64
+2019.06,Brazil,103.87
+2013.01,Israel,99.34
+2020.06,Brazil,105.28
+2013.01,Italy,87.36
+2021.06,Brazil,104.7
+2013.01,Japan,159.79
+2022.06,Brazil,103.98
+2013.01,Lebanon,12.46
+2013.01,Lithuania,114.05
+2013.01,Malaysia,79.74
+2014.06,Bulgaria,65.62
+2013.01,Mexico,87.94
+2015.06,Bulgaria,93.68
+2013.01,Mongolia,14.08
+2016.06,Bulgaria,139.74
+2013.01,Netherlands,160.54
+2017.06,Bulgaria,122.85
+2013.01,New Zealand,163.17
+2018.06,Bulgaria,131.2
+2013.01,Norway,173.86
+2019.06,Bulgaria,130.25
+2013.01,Pakistan,7.67
+2020.06,Bulgaria,127.14
+2013.01,Panama,86.81
+2021.06,Bulgaria,126.88
+2013.01,Philippines,21.08
+2022.06,Bulgaria,128.96
+2014.06,Cambodia,2.46
+2013.01,Poland,90.47
+2013.01,Portugal,119.76
+2013.01,Puerto Rico,117.89
+2013.01,Qatar,169.92
+2014.06,Canada,172.94
+2013.01,Romania,57.75
+2015.06,Canada,214.24
+2013.01,Russia,18.5
+2016.06,Canada,172.83
+2013.01,Saudi Arabia,140.49
+2017.06,Canada,158.19
+2013.01,Serbia,63.68
+2018.06,Canada,173.84
+2013.01,Singapore,69.17
+2019.06,Canada,169.42
+2013.01,Slovakia,114.58
+2020.06,Canada,158.88
+2013.01,Slovenia,133.62
+2021.06,Canada,157.25
+2013.01,South Africa,123.77
+2022.06,Canada,163.77
+2013.01,South Korea,135.62
+2013.01,Spain,141.05
+2013.01,Sweden,191.36
+2014.06,Chile,61.89
+2013.01,Switzerland,215.71
+2015.06,Chile,117.23
+2013.01,Taiwan,120.57
+2016.06,Chile,140.67
+2013.01,Thailand,54.08
+2017.06,Chile,116.43
+2013.01,Turkey,74.84
+2018.06,Chile,124.28
+2013.01,Ukraine,31.86
+2019.06,Chile,123.8
+2013.01,United Arab Emirates,186.01
+2020.06,Chile,102.02
+2013.01,United Kingdom,148.12
+2021.06,Chile,97.27
+2013.01,United States,199.56
+2022.06,Chile,102.89
+2013.01,Uruguay,78.34
+2013.01,Venezuela,-48.27
+2014.01,Argentina,81.12
+2014.06,China,21.18
+2014.01,Australia,175.98
+2015.06,China,61.79
+2014.01,Austria,171.82
+2016.06,China,94.59
+2014.01,Belarus,74.43
+2017.06,China,91.29
+2014.01,Belgium,134.71
+2018.06,China,99.07
+2014.01,Bosnia And Herzegovina,74.6
+2019.06,China,99.87
+2014.01,Brazil,38.76
+2020.06,China,104.96
+2014.01,Bulgaria,62.6
+2021.06,China,103.16
+2014.01,Canada,178.29
+2022.06,China,95.55
+2014.01,Chile,69.32
+2014.01,China,30.3
+2014.01,Colombia,36.53
+2014.06,Colombia,40.15
+2014.01,Croatia,108.7
+2015.06,Colombia,54.79
+2014.01,Czech Republic,122.99
+2016.06,Colombia,118.49
+2014.01,Denmark,178.55
+2017.06,Colombia,103.64
+2014.01,Ecuador,42.25
+2018.06,Colombia,111.09
+2014.01,Egypt,5.41
+2019.06,Colombia,109.94
+2014.01,Estonia,145.4
+2020.06,Colombia,101.7
+2014.01,Finland,178.88
+2021.06,Colombia,102.02
+2014.01,France,136.31
+2022.06,Colombia,102.93
+2014.01,Germany,192.69
+2021.06,Costa Rica,120.42
+2014.01,Greece,77.48
+2022.06,Costa Rica,122.94
+2014.01,Hong Kong,73.24
+2014.01,Hungary,83.18
+2014.01,India,78.01
+2014.06,Croatia,105.5
+2014.01,Indonesia,21.85
+2015.06,Croatia,138.83
+2014.01,Iran,-11.08
+2016.06,Croatia,167.51
+2014.01,Ireland,142.35
+2017.06,Croatia,155.14
+2014.01,Israel,91.16
+2018.06,Croatia,162.33
+2014.01,Italy,90.61
+2019.06,Croatia,164.69
+2014.01,Japan,168.47
+2020.06,Croatia,156.77
+2014.01,Jordan,39.54
+2021.06,Croatia,155.41
+2014.01,Kazakhstan,40.64
+2022.06,Croatia,162.74
+2014.06,Cyprus,144.87
+2014.01,Kuwait,141.37
+2014.01,Lebanon,18.39
+2018.06,Cyprus,159.24
+2014.01,Lithuania,121.91
+2019.06,Cyprus,152.72
+2014.01,Malaysia,89.05
+2020.06,Cyprus,146.86
+2014.01,Mexico,83.47
+2021.06,Cyprus,146.08
+2014.01,Mongolia,-26.75
+2022.06,Cyprus,148.25
+2014.01,Netherlands,160.98
+2014.01,New Zealand,168.56
+2014.01,Norway,168.41
+2014.06,Czech Republic,119.9
+2014.01,Pakistan,22.32
+2015.06,Czech Republic,161.12
+2014.01,Philippines,28.09
+2016.06,Czech Republic,167.77
+2014.01,Poland,95.19
+2017.06,Czech Republic,153.71
+2014.01,Portugal,124.71
+2018.06,Czech Republic,162.03
+2014.01,Puerto Rico,123.64
+2019.06,Czech Republic,160.37
+2014.01,Romania,63.27
+2020.06,Czech Republic,154.7
+2014.01,Russia,16.53
+2021.06,Czech Republic,157.49
+2014.01,Saudi Arabia,139.88
+2022.06,Czech Republic,163.78
+2014.01,Serbia,69.31
+2014.01,Singapore,87.99
+2014.01,Slovakia,108.74
+2014.06,Denmark,165.6
+2014.01,Slovenia,125.56
+2015.06,Denmark,254.74
+2014.01,South Africa,111.61
+2016.06,Denmark,201.53
+2014.01,South Korea,117.9
+2017.06,Denmark,180.14
+2014.01,Spain,123.64
+2018.06,Denmark,199.95
+2014.01,Sweden,180.92
+2019.06,Denmark,196.47
+2014.01,Switzerland,206.23
+2020.06,Denmark,192.53
+2014.01,Taiwan,114.06
+2021.06,Denmark,186.25
+2014.01,Thailand,56.64
+2022.06,Denmark,194.15
+2014.01,Turkey,67.82
+2014.01,Ukraine,22.22
+2014.01,United Arab Emirates,173.27
+2014.06,Ecuador,37.46
+2014.01,United Kingdom,150.97
+2019.06,Ecuador,128.06
+2014.01,United States,195.55
+2020.06,Ecuador,123.09
+2014.01,Uruguay,91.94
+2021.06,Ecuador,116.27
+2014.01,Venezuela,-39.32
+2022.06,Ecuador,120.34
+2015.01,Argentina,77.01
+2015.01,Armenia,49.07
+2015.01,Australia,180.81
+2014.06,Egypt,0.93
+2015.01,Austria,182.62
+2015.06,Egypt,11.32
+2015.01,Bahrain,84.06
+2016.06,Egypt,88.35
+2015.01,Bangladesh,-5.36
+2017.06,Egypt,78.51
+2015.01,Belarus,72.48
+2018.06,Egypt,84.59
+2015.01,Belgium,135.95
+2019.06,Egypt,85.42
+2015.01,Bolivia,6.55
+2020.06,Egypt,86.78
+2015.01,Bosnia And Herzegovina,73.45
+2021.06,Egypt,87.21
+2015.01,Brazil,29.84
+2022.06,Egypt,91.19
+2015.01,Bulgaria,68.3
+2015.01,Cambodia,-4.4
+2014.06,Estonia,137.26
+2015.01,Canada,177.63
+2016.06,Estonia,171.71
+2015.01,Chile,65.48
+2015.01,China,15.99
+2018.06,Estonia,180.68
+2015.01,Colombia,47.71
+2019.06,Estonia,178.27
+2015.01,Croatia,112.34
+2020.06,Estonia,175.99
+2015.01,Cyprus,154.91
+2021.06,Estonia,171.16
+2015.01,Czech Republic,127.53
+2022.06,Estonia,173.83
+2015.01,Denmark,190.18
+2015.01,Dominican Republic,43.6
+2014.06,Finland,182.64
+2015.01,Ecuador,44.52
+2015.06,Finland,242.66
+2015.01,Egypt,-7.07
+2016.06,Finland,183.98
+2015.01,Estonia,144.59
+2017.06,Finland,179.4
+2015.01,Finland,190.25
+2018.06,Finland,197.32
+2015.01,France,139.31
+2019.06,Finland,195.06
+2015.01,Georgia,64.96
+2020.06,Finland,186.4
+2015.01,Germany,195.94
+2021.06,Finland,178.95
+2015.01,Greece,94.66
+2022.06,Finland,186.84
+2015.01,Hong Kong,82.96
+2015.01,Hungary,93.07
+2015.01,India,78.6
+2014.06,France,127.02
+2015.01,Indonesia,22.7
+2015.06,France,183.46
+2015.01,Iran,1.07
+2016.06,France,172.3
+2015.01,Ireland,148.85
+2017.06,France,154.43
+2015.01,Israel,120.43
+2018.06,France,164.33
+2015.01,Italy,100.99
+2019.06,France,156.1
+2015.01,Japan,168.28
+2020.06,France,150.68
+2015.01,Jordan,38.61
+2021.06,France,153.6
+2015.01,Kazakhstan,47
+2022.06,France,152.74
+2015.01,Kenya,7.32
+2014.06,Georgia,65.02
+2015.01,Kuwait,123.39
+2015.01,Latvia,99.04
+2019.06,Georgia,118.42
+2015.01,Lebanon,32.81
+2020.06,Georgia,116.37
+2015.01,Lithuania,112.85
+2021.06,Georgia,116.62
+2015.01,Malaysia,85.32
+2022.06,Georgia,119.15
+2015.01,Mexico,84.97
+2015.01,Moldova,42.13
+2015.01,Mongolia,-35.74
+2014.06,Germany,186.61
+2015.01,Netherlands,166.76
+2015.06,Germany,244.31
+2015.01,New Zealand,175.51
+2016.06,Germany,189.87
+2015.01,Nigeria,2.99
+2017.06,Germany,178.92
+2015.01,North Macedonia,28.85
+2018.06,Germany,189.13
+2015.01,Norway,175.09
+2019.06,Germany,184.3
+2015.01,Pakistan,21.82
+2020.06,Germany,177.25
+2015.01,Panama,89.27
+2021.06,Germany,175.24
+2015.01,Philippines,36.95
+2022.06,Germany,178.32
+2015.01,Poland,109.74
+2015.01,Portugal,129.16
+2015.01,Puerto Rico,125.69
+2014.06,Greece,83.03
+2015.01,Qatar,144.89
+2015.06,Greece,130.32
+2015.01,Romania,83.63
+2016.06,Greece,156.8
+2015.01,Russia,28.38
+2017.06,Greece,131.1
+2015.01,Saudi Arabia,169.37
+2018.06,Greece,137.46
+2015.01,Serbia,60.34
+2019.06,Greece,135.61
+2015.01,Singapore,111.29
+2020.06,Greece,131.51
+2015.01,Slovakia,109.09
+2021.06,Greece,127.96
+2015.01,Slovenia,134.49
+2022.06,Greece,127.08
+2015.01,South Africa,110.92
+2015.01,South Korea,120.03
+2014.06,Hong Kong,77.52
+2015.01,Spain,134.91
+2015.06,Hong Kong,104.85
+2015.01,Sri Lanka,49.87
+2016.06,Hong Kong,104.02
+2015.01,Sweden,193.86
+2017.06,Hong Kong,99.17
+2015.01,Switzerland,222.94
+2018.06,Hong Kong,104.48
+2015.01,Taiwan,92.5
+2019.06,Hong Kong,99.58
+2015.01,Thailand,47.37
+2020.06,Hong Kong,103.19
+2015.01,Turkey,82.55
+2021.06,Hong Kong,96.1
+2015.01,Turkmenistan,157.09
+2022.06,Hong Kong,103.85
+2015.01,Ukraine,20.1
+2015.01,United Arab Emirates,153.68
+2015.01,United Kingdom,156.9
+2014.06,Hungary,85.23
+2015.01,United States,192.49
+2015.06,Hungary,113.65
+2015.01,Uruguay,93.06
+2016.06,Hungary,140.01
+2015.01,Venezuela,-53.04
+2017.06,Hungary,125.82
+2015.01,Vietnam,-19.52
+2018.06,Hungary,134.55
+2016.01,Argentina,138.48
+2019.06,Hungary,133.06
+2016.01,Australia,198.79
+2020.06,Hungary,128.4
+2016.01,Austria,192.4
+2021.06,Hungary,134.54
+2016.01,Belgium,162.29
+2022.06,Hungary,136.22
+2018.06,Iceland,181.84
+2016.01,Bosnia And Herzegovina,146.7
+2019.06,Iceland,188.12
+2016.01,Brazil,101.02
+2020.06,Iceland,180.74
+2016.01,Bulgaria,141.61
+2021.06,Iceland,177.64
+2016.01,Canada,177.23
+2022.06,Iceland,184.48
+2016.01,Chile,147.26
+2016.01,China,99.03
+2016.01,Colombia,128.46
+2014.06,India,72.6
+2016.01,Croatia,172.39
+2015.06,India,115.15
+2016.01,Czech Republic,167.38
+2016.06,India,106.28
+2016.01,Denmark,206.49
+2017.06,India,110.39
+2016.01,Egypt,88.79
+2018.06,India,121.61
+2016.01,Finland,184.01
+2019.06,India,115.41
+2016.01,France,173.56
+2020.06,India,105.86
+2016.01,Germany,199.7
+2021.06,India,103
+2016.01,Greece,165.43
+2022.06,India,124.38
+2016.01,Hong Kong,108.33
+2016.01,Hungary,140.74
+2016.01,India,109.28
+2014.06,Indonesia,17.97
+2016.01,Indonesia,72.19
+2015.06,Indonesia,31.78
+2016.01,Iran,96.93
+2016.06,Indonesia,66.39
+2016.01,Ireland,171.92
+2017.06,Indonesia,103.85
+2016.01,Israel,166.63
+2018.06,Indonesia,107.81
+2016.01,Italy,159.28
+2019.06,Indonesia,101.9
+2016.01,Japan,176.06
+2020.06,Indonesia,91.63
+2016.01,Lithuania,134.33
+2021.06,Indonesia,90.15
+2016.01,Malaysia,63.8
+2022.06,Indonesia,96.85
+2016.01,Mexico,137.01
+2016.01,Netherlands,192.4
+2016.01,New Zealand,201.06
+2014.06,Iran,-11.72
+2016.01,North Macedonia,115.03
+2015.06,Iran,25.39
+2016.01,Norway,188.9
+2016.06,Iran,96.99
+2016.01,Pakistan,93.99
+2017.06,Iran,85.03
+2016.01,Philippines,65.83
+2018.06,Iran,91.99
+2016.01,Poland,153.61
+2019.06,Iran,75.22
+2016.01,Portugal,181.18
+2020.06,Iran,70.32
+2016.01,Romania,146.13
+2021.06,Iran,63.6
+2016.01,Russia,88.31
+2022.06,Iran,69.38
+2016.01,Saudi Arabia,159.18
+2016.01,Serbia,138.26
+2016.01,Singapore,93.09
+2014.06,Ireland,140.13
+2016.01,Slovenia,175.93
+2015.06,Ireland,188.99
+2016.01,South Africa,156.7
+2016.06,Ireland,170.83
+2016.01,South Korea,170.29
+2017.06,Ireland,152.11
+2016.01,Spain,186.41
+2018.06,Ireland,161.29
+2016.01,Sweden,185.81
+2019.06,Ireland,158.34
+2016.01,Switzerland,208.54
+2020.06,Ireland,150.16
+2016.01,Thailand,63.83
+2021.06,Ireland,150.54
+2016.01,Turkey,137.31
+2022.06,Ireland,151.73
+2016.01,Ukraine,85.56
+2016.01,United Arab Emirates,144.09
+2016.01,United Kingdom,180.25
+2014.06,Israel,104.75
+2016.01,United States,183.96
+2015.06,Israel,169.39
+2017.01,Argentina,139.59
+2016.06,Israel,160.72
+2017.01,Australia,176.54
+2017.06,Israel,142.48
+2017.01,Austria,190.37
+2018.06,Israel,153.74
+2017.01,Belarus,119.23
+2019.06,Israel,152.34
+2017.01,Belgium,160.52
+2020.06,Israel,146.89
+2017.01,Bosnia And Herzegovina,139.14
+2021.06,Israel,143.65
+2017.01,Brazil,96.15
+2022.06,Israel,146.39
+2017.01,Bulgaria,138.2
+2017.01,Canada,167.18
+2017.01,Chile,136.2
+2014.06,Italy,88.38
+2017.01,China,90.95
+2015.06,Italy,139.5
+2017.01,Colombia,115.38
+2016.06,Italy,160.21
+2017.01,Croatia,170.63
+2017.06,Italy,132.59
+2017.01,Cyprus,166.64
+2018.06,Italy,149.08
+2017.01,Czech Republic,165.41
+2019.06,Italy,143.81
+2017.01,Denmark,184.92
+2020.06,Italy,138.97
+2017.01,Egypt,91.81
+2021.06,Italy,137.77
+2017.01,Estonia,171.09
+2022.06,Italy,137.27
+2017.01,Finland,182.93
+2017.01,France,160.25
+2017.01,Germany,189.74
+2014.06,Japan,156.25
+2017.01,Greece,148.32
+2015.06,Japan,191.43
+2017.01,Hong Kong,94.45
+2016.06,Japan,172.72
+2017.01,Hungary,138.82
+2017.06,Japan,155.8
+2017.01,India,101.52
+2018.06,Japan,184.25
+2017.01,Indonesia,62.02
+2019.06,Japan,176.46
+2017.01,Iran,97.17
+2020.06,Japan,163.23
+2017.01,Ireland,166.9
+2021.06,Japan,164.06
+2017.01,Israel,157.88
+2022.06,Japan,172.65
+2017.01,Italy,142.52
+2014.06,Jordan,38.31
+2017.01,Japan,147.49
+2016.06,Jordan,120.57
+2017.01,Jordan,117.47
+2018.06,Jordan,113.8
+2017.01,Lebanon,106.18
+2019.06,Jordan,110.71
+2017.01,Lithuania,130.28
+2020.06,Jordan,114.06
+2017.01,Malaysia,51.65
+2021.06,Jordan,112.28
+2017.01,Mexico,129.06
+2022.06,Jordan,113.69
+2017.01,Netherlands,175.23
+2014.06,Kazakhstan,43.51
+2017.01,New Zealand,184.74
+2017.01,North Macedonia,116.42
+2019.06,Kazakhstan,85.88
+2017.01,Norway,165.93
+2020.06,Kazakhstan,98.15
+2017.01,Pakistan,93.41
+2021.06,Kazakhstan,94.25
+2017.01,Philippines,56.87
+2022.06,Kazakhstan,96.56
+2014.06,Kenya,5.38
+2017.01,Poland,150.21
+2019.06,Kenya,73.14
+2017.01,Portugal,178.43
+2020.06,Kenya,66.6
+2017.01,Qatar,132.37
+2021.06,Kenya,76.92
+2017.01,Romania,143.04
+2022.06,Kenya,90.94
+2017.01,Russia,85.93
+2014.06,Kuwait,112.25
+2017.01,Saudi Arabia,146.41
+2017.01,Serbia,133.43
+2020.06,Kuwait,115.14
+2017.01,Singapore,86.5
+2021.06,Kuwait,113.67
+2017.01,Slovakia,152.55
+2022.06,Kuwait,118.83
+2017.01,Slovenia,175.45
+2017.01,South Africa,144.72
+2019.06,Latvia,153.59
+2017.01,South Korea,162.49
+2020.06,Latvia,148.68
+2017.01,Spain,183.65
+2021.06,Latvia,146.8
+2017.01,Sri Lanka,88.99
+2022.06,Latvia,152.22
+2017.01,Sweden,172.74
+2017.01,Switzerland,173.54
+2014.06,Lebanon,20.88
+2017.01,Taiwan,150.08
+2017.01,Thailand,57.21
+2018.06,Lebanon,112.24
+2017.01,Turkey,129.63
+2019.06,Lebanon,110.07
+2017.01,Ukraine,87.49
+2020.06,Lebanon,99.64
+2017.01,United Arab Emirates,139.27
+2017.01,United Kingdom,172.87
+2022.06,Lebanon,97.72
+2017.01,United States,179.73
+2017.01,Venezuela,0
+2014.06,Lithuania,114.55
+2017.01,Vietnam,36.12
+2015.06,Lithuania,121.57
+2018.01,Argentina,131.85
+2016.06,Lithuania,133.37
+2018.01,Australia,188.7
+2017.06,Lithuania,138.36
+2018.01,Austria,190.22
+2018.06,Lithuania,153.38
+2018.01,Belgium,164
+2019.06,Lithuania,158.98
+2018.01,Bosnia And Herzegovina,129.33
+2020.06,Lithuania,159.77
+2018.01,Brazil,100.13
+2021.06,Lithuania,160.29
+2018.01,Bulgaria,129.69
+2022.06,Lithuania,162.95
+2021.06,Luxembourg,171.81
+2018.01,Canada,173.9
+2022.06,Luxembourg,173.76
+2018.01,Chile,122.73
+2018.01,China,99.43
+2018.01,Colombia,112.15
+2014.06,Malaysia,78.94
+2018.01,Croatia,162.36
+2015.06,Malaysia,112.21
+2018.01,Czech Republic,162.01
+2016.06,Malaysia,57.4
+2018.01,Denmark,197.75
+2017.06,Malaysia,104.15
+2018.01,Egypt,84.42
+2018.06,Malaysia,121.32
+2018.01,Estonia,176.44
+2019.06,Malaysia,120.39
+2018.01,Finland,195.3
+2020.06,Malaysia,117.42
+2018.01,France,166.22
+2021.06,Malaysia,115.02
+2018.01,Germany,190.04
+2022.06,Malaysia,121.63
+2018.01,Greece,137.43
+2022.06,Malta,106.08
+2018.01,Hong Kong,110.28
+2018.01,Hungary,132.31
+2018.01,India,122.09
+2014.06,Mexico,76.62
+2018.01,Indonesia,112.89
+2015.06,Mexico,125.57
+2018.01,Iran,92.43
+2016.06,Mexico,142.85
+2018.01,Ireland,163.53
+2017.06,Mexico,120.73
+2018.01,Israel,152.25
+2018.06,Mexico,123.99
+2018.01,Italy,146.13
+2019.06,Mexico,122.44
+2018.01,Japan,176.04
+2020.06,Mexico,120.65
+2018.01,Lithuania,148.98
+2021.06,Mexico,119.82
+2018.01,Malaysia,116.05
+2022.06,Mexico,126.94
+2018.01,Mexico,126.42
+2018.01,Netherlands,191.25
+2018.01,New Zealand,182.4
+2014.06,Mongolia,-39.97
+2018.01,Norway,176.27
+2019.06,Morocco,103.67
+2018.01,Pakistan,100.35
+2020.06,Morocco,104.94
+2018.01,Philippines,99.11
+2021.06,Morocco,105.04
+2018.01,Poland,146.58
+2022.06,Morocco,107.19
+2018.01,Portugal,166.71
+2018.01,Qatar,159.62
+2018.01,Romania,144.05
+2014.06,Netherlands,149.9
+2018.01,Russia,103.32
+2015.06,Netherlands,220.81
+2018.01,Saudi Arabia,149.58
+2016.06,Netherlands,186.46
+2018.01,Serbia,123.48
+2017.06,Netherlands,177.8
+2018.01,Singapore,150.45
+2018.06,Netherlands,190.22
+2018.01,Slovakia,155.37
+2019.06,Netherlands,186.41
+2018.01,Slovenia,175.36
+2020.06,Netherlands,184.18
+2018.01,South Africa,137.89
+2021.06,Netherlands,180.27
+2018.01,South Korea,155.38
+2022.06,Netherlands,191.46
+2018.01,Spain,174.92
+2018.01,Sweden,176.81
+2018.01,Switzerland,190.81
+2014.06,New Zealand,164.24
+2018.01,Taiwan,163.28
+2015.06,New Zealand,203.79
+2018.01,Thailand,101.18
+2016.06,New Zealand,196.09
+2018.01,Turkey,127.64
+2017.06,New Zealand,172.46
+2018.01,Ukraine,95.96
+2018.06,New Zealand,185.08
+2018.01,United Arab Emirates,163.54
+2019.06,New Zealand,183.07
+2018.01,United Kingdom,171.89
+2020.06,New Zealand,178.22
+2018.01,United States,180.56
+2021.06,New Zealand,173.6
+2018.01,Vietnam,81.09
+2022.06,New Zealand,176.83
+2019.01,Argentina,122.49
+2019.01,Australia,191.13
+2020.06,Nigeria,54.91
+2019.01,Austria,191.05
+2021.06,Nigeria,54.71
+2019.01,Belarus,141.47
+2022.06,Nigeria,45.13
+2019.01,Belgium,162.09
+2019.01,Bosnia And Herzegovina,124.51
+2016.06,North Macedonia,114.94
+2019.01,Brazil,100.33
+2018.06,North Macedonia,108.89
+2019.01,Bulgaria,130.59
+2019.06,North Macedonia,110.42
+2019.01,Canada,170.32
+2020.06,North Macedonia,108.99
+2019.01,Chile,124.14
+2021.06,North Macedonia,108.25
+2019.01,China,97.92
+2022.06,North Macedonia,109.82
+2019.01,Colombia,108.36
+2019.01,Croatia,165.31
+2019.01,Cyprus,157.57
+2014.06,Norway,160.51
+2019.01,Czech Republic,158.79
+2015.06,Norway,222.96
+2019.01,Denmark,198.57
+2016.06,Norway,176.23
+2019.01,Egypt,83.98
+2017.06,Norway,158.85
+2019.01,Estonia,180.88
+2018.06,Norway,181.6
+2019.01,Finland,194.01
+2019.06,Norway,179.78
+2019.01,France,157.83
+2020.06,Norway,174.55
+2019.01,Georgia,120.9
+2021.06,Norway,171.72
+2019.01,Germany,187.05
+2022.06,Norway,179.63
+2019.01,Greece,137.82
+2020.06,Oman,173.08
+2019.01,Hong Kong,100.9
+2021.06,Oman,168.82
+2019.01,Hungary,134.47
+2022.06,Oman,172.12
+2019.01,Iceland,187.79
+2019.01,India,117.51
+2019.01,Indonesia,107.2
+2014.06,Pakistan,23.52
+2019.01,Iran,87.02
+2015.06,Pakistan,37.81
+2019.01,Ireland,160.82
+2016.06,Pakistan,92.28
+2019.01,Israel,153.82
+2017.06,Pakistan,94.23
+2019.01,Italy,145.69
+2018.06,Pakistan,103.03
+2019.01,Japan,180.5
+2019.06,Pakistan,105.83
+2019.01,Jordan,112.94
+2020.06,Pakistan,105.09
+2019.01,Kazakhstan,87.17
+2021.06,Pakistan,102.15
+2019.01,Latvia,149.15
+2022.06,Pakistan,103.07
+2019.01,Lebanon,111.21
+2014.06,Panama,93.65
+2019.01,Lithuania,156.36
+2019.01,Malaysia,122.11
+2019.06,Panama,110.04
+2019.01,Mexico,123.48
+2020.06,Panama,112.01
+2019.01,Netherlands,188.91
+2021.06,Panama,111.13
+2019.01,New Zealand,185.58
+2022.06,Panama,115.3
+2019.06,Peru,88.14
+2019.01,North Macedonia,110.64
+2020.06,Peru,85.28
+2019.01,Norway,181.86
+2021.06,Peru,81.29
+2019.01,Pakistan,104.63
+2022.06,Peru,81.29
+2019.01,Panama,113.12
+2019.01,Philippines,90.73
+2019.01,Poland,147.98
+2014.06,Philippines,32.71
+2019.01,Portugal,163.5
+2015.06,Philippines,60.06
+2019.01,Qatar,167.84
+2016.06,Philippines,60.04
+2019.01,Romania,140.31
+2017.06,Philippines,92.93
+2019.01,Russia,104.94
+2018.06,Philippines,94.62
+2019.01,Saudi Arabia,152.72
+2019.06,Philippines,88.23
+2019.01,Serbia,119.83
+2020.06,Philippines,79.18
+2019.01,Singapore,156.91
+2021.06,Philippines,78.12
+2019.01,Slovakia,153.1
+2022.06,Philippines,81.4
+2019.01,Slovenia,175.98
+2019.01,South Africa,135.31
+2019.01,South Korea,149.53
+2014.06,Poland,97.91
+2019.01,Spain,174.16
+2015.06,Poland,141.79
+2019.01,Sri Lanka,95.3
+2016.06,Poland,150.13
+2019.01,Sweden,178.67
+2017.06,Poland,141.3
+2019.01,Switzerland,195.93
+2018.06,Poland,147.53
+2019.01,Taiwan,133.82
+2019.06,Poland,145.9
+2019.01,Thailand,103.26
+2020.06,Poland,125.2
+2019.01,Turkey,125.51
+2021.06,Poland,127.79
+2019.01,Ukraine,102.34
+2022.06,Poland,132.16
+2019.01,United Arab Emirates,167.81
+2019.01,United Kingdom,170.81
+2019.01,United States,179.2
+2014.06,Portugal,122.57
+2019.01,Vietnam,88.82
+2015.06,Portugal,159.57
+2020.01,Argentina,115.31
+2016.06,Portugal,180.66
+2020.01,Australia,186.21
+2017.06,Portugal,159.59
+2020.01,Austria,182.5
+2018.06,Portugal,164.78
+2020.01,Bangladesh,70.03
+2019.06,Portugal,164.41
+2020.01,Belarus,134.83
+2020.06,Portugal,162.46
+2020.01,Belgium,153.47
+2021.06,Portugal,159.83
+2020.01,Bosnia And Herzegovina,121.89
+2022.06,Portugal,162.17
+2020.01,Brazil,105.65
+2020.01,Bulgaria,129.8
+2014.06,Puerto Rico,111.13
+2020.01,Canada,163.47
+2020.06,Puerto Rico,130.96
+2020.01,Chile,119.76
+2021.06,Puerto Rico,128.21
+2020.01,China,102.81
+2022.06,Puerto Rico,131.13
+2020.01,Colombia,105.83
+2014.06,Qatar,150.92
+2020.01,Croatia,159.01
+2016.06,Qatar,135.57
+2020.01,Cyprus,147.93
+2020.01,Czech Republic,156.24
+2018.06,Qatar,167.57
+2020.01,Denmark,192.67
+2019.06,Qatar,164.29
+2020.01,Ecuador,125.14
+2020.06,Qatar,156.9
+2020.01,Egypt,86.54
+2021.06,Qatar,151.48
+2020.01,Estonia,177.82
+2022.06,Qatar,155.64
+2020.01,Finland,190.22
+2020.01,France,153.95
+2020.01,Georgia,115.95
+2014.06,Romania,66.71
+2020.01,Germany,179.78
+2015.06,Romania,107.45
+2020.01,Greece,133.07
+2016.06,Romania,144.93
+2020.01,Hong Kong,99.05
+2017.06,Romania,138.19
+2020.01,Hungary,128.16
+2018.06,Romania,141.02
+2020.01,Iceland,181.75
+2019.06,Romania,135.71
+2020.01,India,108.63
+2020.06,Romania,131.69
+2020.01,Indonesia,97.47
+2021.06,Romania,130.86
+2020.01,Iran,74.14
+2022.06,Romania,131.09
+2020.01,Ireland,153.53
+2020.01,Israel,149.94
+2020.01,Italy,140.76
+2014.06,Russia,23.02
+2020.01,Japan,167.99
+2015.06,Russia,59.76
+2020.01,Jordan,112.4
+2016.06,Russia,86.53
+2020.01,Kazakhstan,88.31
+2017.06,Russia,91.73
+2020.01,Kenya,70.56
+2018.06,Russia,107.34
+2020.01,Kuwait,115.75
+2019.06,Russia,104.05
+2020.01,Latvia,150
+2020.06,Russia,101.57
+2020.01,Lebanon,106.56
+2021.06,Russia,97.91
+2020.01,Lithuania,159.42
+2022.06,Russia,103.19
+2020.01,Malaysia,118.44
+2020.01,Mexico,118.55
+2020.01,Morocco,105.46
+2014.06,Saudi Arabia,137.32
+2020.01,Netherlands,183.67
+2015.06,Saudi Arabia,228.49
+2020.01,New Zealand,181.02
+2016.06,Saudi Arabia,156.98
+2020.01,Nigeria,55.65
+2017.06,Saudi Arabia,139.86
+2020.01,North Macedonia,110.46
+2018.06,Saudi Arabia,151.8
+2020.01,Norway,175.19
+2019.06,Saudi Arabia,151.75
+2020.01,Oman,167.09
+2020.06,Saudi Arabia,148.94
+2020.01,Pakistan,105.44
+2021.06,Saudi Arabia,144.69
+2020.01,Panama,108.36
+2022.06,Saudi Arabia,150.17
+2020.01,Peru,85.46
+2020.01,Philippines,85.37
+2020.01,Poland,141.83
+2014.06,Serbia,66.56
+2020.01,Portugal,162.91
+2015.06,Serbia,80.54
+2020.01,Qatar,162.29
+2016.06,Serbia,135.95
+2020.01,Romania,132.44
+2017.06,Serbia,116.42
+2020.01,Russia,102.31
+2018.06,Serbia,122.57
+2020.01,Saudi Arabia,150.56
+2019.06,Serbia,117.7
+2020.01,Serbia,116.3
+2020.06,Serbia,116.08
+2020.01,Singapore,144.39
+2021.06,Serbia,117
+2020.01,Slovakia,152.53
+2022.06,Serbia,120.4
+2020.01,Slovenia,172.15
+2020.01,South Africa,131.97
+2020.01,South Korea,139.02
+2014.06,Singapore,93.84
+2020.01,Spain,169.82
+2015.06,Singapore,152.09
+2020.01,Sri Lanka,85.16
+2016.06,Singapore,88.86
+2020.01,Sweden,175.95
+2017.06,Singapore,134.53
+2020.01,Switzerland,192.01
+2018.06,Singapore,156.17
+2020.01,Taiwan,143.23
+2019.06,Singapore,146.09
+2020.01,Thailand,101.88
+2020.06,Singapore,142.25
+2020.01,Turkey,127.1
+2021.06,Singapore,146.48
+2020.01,Ukraine,104.77
+2022.06,Singapore,154.54
+2020.01,United Arab Emirates,156.67
+2020.01,United Kingdom,162.71
+2014.06,Slovakia,103.92
+2020.01,United States,172.11
+2015.06,Slovakia,136.72
+2016.06,Slovakia,154.13
+2020.01,Uruguay,125.98
+2017.06,Slovakia,144.55
+2020.01,Vietnam,87.48
+2018.06,Slovakia,155.38
+2021.01,Argentina,110.5
+2019.06,Slovakia,154.53
+2021.01,Australia,181.52
+2020.06,Slovakia,149.93
+2021.01,Austria,182.37
+2021.06,Slovakia,147.09
+2021.01,Azerbaijan,102.88
+2022.06,Slovakia,150.5
+2021.01,Bangladesh,65.27
+2021.01,Belarus,107.35
+2021.01,Belgium,150.89
+2014.06,Slovenia,121.3
+2021.01,Bosnia And Herzegovina,125.71
+2015.06,Slovenia,168.22
+2021.01,Brazil,104.75
+2021.01,Bulgaria,126.34
+2017.06,Slovenia,166.1
+2021.01,Canada,159.99
+2018.06,Slovenia,175.72
+2021.01,Chile,99.9
+2019.06,Slovenia,172.32
+2021.01,China,103.15
+2020.06,Slovenia,169.81
+2021.01,Colombia,101.33
+2021.06,Slovenia,165.74
+2021.01,Costa Rica,121.65
+2022.06,Slovenia,168.74
+2021.01,Croatia,156.1
+2021.01,Cyprus,144.06
+2021.01,Czech Republic,156.33
+2014.06,South Africa,109.18
+2021.01,Denmark,190.01
+2015.06,South Africa,150.97
+2021.01,Ecuador,118.76
+2016.06,South Africa,148.93
+2021.01,Egypt,86.31
+2017.06,South Africa,126.41
+2021.01,Estonia,173.56
+2018.06,South Africa,137.05
+2021.01,Finland,182.79
+2019.06,South Africa,135.75
+2021.01,France,150.73
+2020.06,South Africa,132.39
+2021.01,Georgia,118.87
+2021.06,South Africa,131.37
+2021.01,Germany,176.76
+2022.06,South Africa,136.55
+2021.01,Greece,129.86
+2021.01,Hong Kong,99.34
+2014.06,South Korea,110.44
+2021.01,Hungary,134.01
+2015.06,South Korea,194.35
+2021.01,Iceland,179.1
+2016.06,South Korea,167.52
+2021.01,India,104.52
+2017.06,South Korea,142.67
+2021.01,Indonesia,90.1
+2018.06,South Korea,153.74
+2021.01,Iran,64.73
+2019.06,South Korea,151.19
+2021.01,Ireland,150.89
+2020.06,South Korea,136.27
+2021.01,Israel,144.14
+2021.06,South Korea,124.73
+2021.01,Italy,138.63
+2022.06,South Korea,130.82
+2021.01,Japan,162.32
+2021.01,Jordan,114.04
+2021.01,Kazakhstan,96.42
+2014.06,Spain,121.24
+2021.01,Kenya,75.77
+2015.06,Spain,178.77
+2021.01,Kuwait,113.98
+2016.06,Spain,184.69
+2021.01,Latvia,147.59
+2017.06,Spain,165.67
+2021.01,Lebanon,94.47
+2018.06,Spain,174.45
+2021.01,Lithuania,160.02
+2019.06,Spain,173.56
+2021.01,Malaysia,116.94
+2020.06,Spain,167.05
+2021.01,Mexico,120.29
+2021.06,Spain,163.48
+2021.01,Morocco,104.42
+2022.06,Spain,173.01
+2021.01,Netherlands,183.31
+2021.01,New Zealand,175.77
+2021.01,Nigeria,52
+2019.06,Sri Lanka,89.48
+2021.01,North Macedonia,108.47
+2020.06,Sri Lanka,80.36
+2021.01,Norway,173.57
+2021.06,Sri Lanka,75.52
+2021.01,Oman,172.08
+2022.06,Sri Lanka,68.9
+2021.01,Pakistan,105.14
+2021.01,Panama,110.32
+2021.01,Peru,83.3
+2014.06,Sweden,176.56
+2021.01,Philippines,78.39
+2015.06,Sweden,237.19
+2021.01,Poland,132.65
+2016.06,Sweden,177.93
+2021.01,Portugal,161.91
+2017.06,Sweden,159.9
+2021.01,Puerto Rico,130.77
+2018.06,Sweden,181.38
+2021.01,Qatar,154.58
+2019.06,Sweden,180.52
+2021.01,Romania,131.71
+2020.06,Sweden,172.18
+2021.01,Russia,101.67
+2021.06,Sweden,170.19
+2021.01,Saudi Arabia,147.37
+2022.06,Sweden,173.71
+2021.01,Serbia,116.24
+2021.01,Singapore,143.82
+2021.01,Slovakia,149.68
+2014.06,Switzerland,208.51
+2021.01,Slovenia,168.2
+2015.06,Switzerland,285.77
+2021.01,South Africa,132.19
+2016.06,Switzerland,196.44
+2021.01,South Korea,130.02
+2017.06,Switzerland,172.86
+2021.01,Spain,164.48
+2018.06,Switzerland,193.97
+2021.01,Sri Lanka,79.78
+2019.06,Switzerland,196.08
+2021.01,Sweden,171.4
+2020.06,Switzerland,190.92
+2021.01,Switzerland,190.82
+2021.06,Switzerland,188.36
+2021.01,Taiwan,138.82
+2022.06,Switzerland,195.06
+2021.01,Thailand,100.29
+2021.01,Turkey,125.97
+2014.06,Taiwan,94.01
+2021.01,Ukraine,107.35
+2016.06,Taiwan,150.62
+2021.01,United Arab Emirates,156.03
+2017.06,Taiwan,149.97
+2021.01,United Kingdom,158.99
+2018.06,Taiwan,159.47
+2021.01,United States,166.98
+2019.06,Taiwan,146.59
+2021.01,Uruguay,124.63
+2020.06,Taiwan,140.47
+2021.01,Vietnam,88.38
+2021.06,Taiwan,138.5
+2022.01,Argentina,105.42
+2022.06,Taiwan,143.83
+2022.01,Australia,183.81
+2022.01,Austria,179.16
+2022.01,Azerbaijan,104.1
+2014.06,Thailand,46.94
+2022.01,Bangladesh,67.59
+2015.06,Thailand,68.85
+2022.01,Belarus,108.48
+2016.06,Thailand,49.48
+2022.01,Belgium,151.86
+2017.06,Thailand,82.02
+2022.01,Bosnia And Herzegovina,127.07
+2018.06,Thailand,103.92
+2022.01,Brazil,107.04
+2019.06,Thailand,104.54
+2022.01,Bulgaria,130.09
+2020.06,Thailand,101.64
+2022.01,Canada,160.38
+2021.06,Thailand,100.3
+2022.01,Chile,100.15
+2022.06,Thailand,101.85
+2022.01,China,105.07
+2022.06,Tunisia,117.33
+2022.01,Colombia,103.54
+2022.01,Costa Rica,122.07
+2022.01,Croatia,159.21
+2014.06,Turkey,64.51
+2022.01,Cyprus,147.1
+2015.06,Turkey,111.83
+2022.01,Czech Republic,162.64
+2016.06,Turkey,129.65
+2022.01,Denmark,192.36
+2017.06,Turkey,118.34
+2022.01,Ecuador,118.84
+2018.06,Turkey,127.93
+2022.01,Egypt,89.87
+2019.06,Turkey,126.46
+2022.01,Estonia,174.19
+2020.06,Turkey,126.4
+2022.01,Finland,184.96
+2021.06,Turkey,124.19
+2022.01,France,156.65
+2022.06,Turkey,119.53
+2022.01,Georgia,121.14
+2022.01,Germany,180.27
+2022.01,Greece,129.24
+2022.01,Hong Kong,98.42
+2014.06,Ukraine,20.07
+2022.01,Hungary,137.15
+2015.06,Ukraine,12.39
+2022.01,Iceland,182.26
+2016.06,Ukraine,84.07
+2022.01,India,110.99
+2017.06,Ukraine,87.63
+2022.01,Indonesia,90.36
+2018.06,Ukraine,100.41
+2022.01,Iran,64.89
+2019.06,Ukraine,103.32
+2022.01,Ireland,154.52
+2020.06,Ukraine,105.26
+2022.01,Israel,146.06
+2021.06,Ukraine,107.8
+2022.01,Italy,141.07
+2022.06,Ukraine,112.06
+2022.01,Japan,169.48
+2022.01,Jordan,113.92
+2022.01,Kazakhstan,93.77
+2014.06,United Arab Emirates,160.99
+2022.01,Kenya,92.54
+2015.06,United Arab Emirates,190.91
+2022.01,Kuwait,117.34
+2016.06,United Arab Emirates,141.51
+2022.01,Latvia,150.81
+2017.06,United Arab Emirates,140.62
+2022.01,Lebanon,99.35
+2018.06,United Arab Emirates,176.22
+2022.01,Lithuania,161.84
+2019.06,United Arab Emirates,158.32
+2022.01,Luxembourg,173.63
+2020.06,United Arab Emirates,155.41
+2022.01,Malaysia,117.98
+2021.06,United Arab Emirates,156.94
+2022.01,Malta,109.5
+2022.06,United Arab Emirates,174.37
+2022.01,Mexico,124.9
+2022.01,Morocco,107.54
+2022.01,Netherlands,185.38
+2014.06,United Kingdom,146.17
+2022.01,New Zealand,176.81
+2015.06,United Kingdom,193.42
+2022.01,Nigeria,52.44
+2016.06,United Kingdom,177.73
+2022.01,North Macedonia,109.6
+2017.06,United Kingdom,156.8
+2022.01,Norway,176.39
+2018.06,United Kingdom,174.25
+2022.01,Oman,173.68
+2019.06,United Kingdom,166.73
+2022.01,Pakistan,102.57
+2020.06,United Kingdom,161.2
+2022.01,Panama,114.32
+2021.06,United Kingdom,156.94
+2022.01,Peru,80.42
+2022.06,United Kingdom,164.8
+2022.01,Philippines,83.74
+2022.01,Poland,140.02
+2022.01,Portugal,162.52
+2014.06,United States,187.79
+2022.01,Puerto Rico,133.77
+2015.06,United States,220.38
+2022.01,Qatar,154.53
+2016.06,United States,181.91
+2022.01,Romania,133.38
+2017.06,United States,167.5
+2022.01,Russia,103.28
+2018.06,United States,182.67
+2022.01,Saudi Arabia,149.54
+2019.06,United States,176.77
+2022.01,Serbia,117.23
+2020.06,United States,169.78
+2022.01,Singapore,151.59
+2021.06,United States,163.6
+2022.01,Slovakia,151.16
+2022.06,United States,167.19
+2022.01,Slovenia,169.04
+2022.01,South Africa,136.02
+2014.06,Uruguay,100.17
+2022.01,South Korea,125.04
+2019.06,Uruguay,127.01
+2022.01,Spain,168.48
+2020.06,Uruguay,124.8
+2022.01,Sri Lanka,67.88
+2021.06,Uruguay,122.42
+2022.01,Sweden,175.3
+2022.06,Uruguay,122.73
+2022.01,Switzerland,195.27
+2022.01,Taiwan,140.15
+2014.06,Venezuela,-59.63
+2022.01,Thailand,100.97
+2015.06,Venezuela,-40.72
+2022.01,Tunisia,114.56
+2022.01,Turkey,124.05
+2022.06,Venezuela,73.03
+2014.06,Vietnam,-1.29
+2022.01,Ukraine,111.93
+2016.06,Vietnam,31.48
+2022.01,United Arab Emirates,160.38
+2022.01,United Kingdom,161.74
+2018.06,Vietnam,86.04
+2022.01,United States,170.72
+2019.06,Vietnam,85.1
+2022.01,Uruguay,122.26
+2020.06,Vietnam,86.49
+2022.01,Venezuela,77.43
+2021.06,Vietnam,88.9
+2022.01,Vietnam,89.95
+2022.06,Vietnam,86.26
+2023.01,Netherlands,196.7
+2023.01,Denmark,194.7
+2023.01,Switzerland,193.6
+2023.01,Luxembourg,192.9
+2023.01,Finland,190.5
+2023.01,Iceland,187.5
+2023.01,Austria,185.8
+2023.01,Oman,184.7
+2023.01,Australia,183
+2023.01,Norway,182.7
+2023.01,Germany,179
+2023.01,New Zealand,176.7
+2023.01,Japan,176.3
+2023.01,Sweden,175.8
+2023.01,United Arab Emirates,175.7
+2023.01,Spain,173.8
+2023.01,United States,172.7
+2023.01,Estonia,171.9
+2023.01,Slovenia,169.3
+2023.01,Qatar,167.5
+2023.01,United Kingdom,166.4
+2023.01,Portugal,163.8
+2023.01,Czech Republic,163.6
+2023.01,Croatia,163.2
+2023.01,Canada,162.3
+2023.01,Lithuania,161.5
+2023.01,Belgium,157.3
+2023.01,Singapore,154.2
+2023.01,Ireland,154
+2023.01,France,153.8
+2023.01,Latvia,153.2
+2023.01,Saudi Arabia,151.8
+2023.01,Slovakia,149.7
+2023.01,Cyprus,148.5
+2023.01,Israel,148.4
+2023.01,Taiwan (China),147.8
+2023.01,Italy,140.9
+2023.01,Poland,139.9
+2023.01,South Africa,138.8
+2023.01,Hungary,134.3
+2023.01,South Korea,133
+2023.01,Romania,132.9
+2023.01,Bulgaria,131.6
+2023.01,Uruguay,131.4
+2023.01,Bosnia And Herzegovina,128.6
+2023.01,Greece,128.6
+2023.01,Mexico,127
+2023.01,Malaysia,126
+2023.01,Kuwait,125
+2023.01,Ecuador,122
+2023.01,Turkey,119.4
+2023.01,Panama,119
+2023.01,Georgia,118.6
+2023.01,India,117.9
+2023.01,Serbia,117.4
+2023.01,Jordan,116.8
+2023.01,Belarus,114.7
+2023.01,Malta,112.7
+2023.01,Ukraine,112.5
+2023.01,Argentina,111
+2023.01,North Macedonia,110
+2023.01,Azerbaijan,109.6
+2023.01,Morocco,106.5
+2023.01,Brazil,105.2
+2023.01,China,104.1
+2023.01,Russia,103
+2023.01,Pakistan,102.1
+2023.01,Chile,102
+2023.01,Hong Kong (China),101.9
+2023.01,Kenya,101.4
+2023.01,Colombia,101.2
+2023.01,Thailand,100.5
+2023.01,Indonesia,98
+2023.01,Kazakhstan,97.6
+2023.01,Egypt,90.8
+2023.01,Vietnam,89.3
+2023.01,Lebanon,88.9
+2023.01,Peru,81.8
+2023.01,Philippines,81.7
+2023.01,Iran,73.8
+2023.01,Sri Lanka,72.8
+2023.01,Venezuela,72.6
+2023.01,Bangladesh,70.1
+2023.01,Nigeria,38.5

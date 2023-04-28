@@ -1,0 +1,82 @@
+async function componentThree(dataImport){await buildMetricDescriptionAccordion(dataImport)
+await appendBarDescriptionTooltip()
+let accordionQueue=new Queue()
+let initialGeoActive=d3.select('.description-state-content-container')
+accordionQueueUpdate(accordionQueue,initialGeoActive)
+if(document.URL.includes('#')){let thisGeo=document.URL.substring(document.URL.indexOf('#')+1)
+await openByGeo(thisGeo,dataImport,accordionQueue)}
+if(geoLevel==='us_state'){await makeBars(dataImport,initialGeoActive)}
+await openCloseAccordion(dataImport,accordionQueue)
+await tocOpenAccordion(dataImport,accordionQueue)
+if(window.innerWidth>600){if(geoLevel==='us_state'){await anchorMapAccordion('.map-states',dataImport,accordionQueue)}else{await anchorMapAccordion('.map-countries',dataImport,accordionQueue)}}}
+function accordionQueueUpdate(queue,targetNode){const MAX_NODES=5
+let limitStatus;if(queue.length()>=MAX_NODES){limitStatus='over limits'}else{limitStatus='under limits'}
+if(limitStatus==='under limits'){queue.enqueue(targetNode)}
+if(limitStatus==='over limits'){let parentToDequeue=d3.select(queue.peek().node().parentNode)
+let openMoreContainer=parentToDequeue.select('.open-more-container')
+let thisGeo=openMoreContainer.attr('id').replaceAll('open-more-container-','')
+let label=openMoreContainer.select('p').text('See more').style('padding-left','1.7px')
+let icon=openMoreContainer.select('span').text('add_circle')
+let container=d3.select(`#description-state-content-container-${thisGeo}`).style('height','0')
+d3.select(`#description-state-bar-plot-canvas-${thisGeo}`).remove()
+queue.dequeue()
+queue.enqueue(targetNode)}}
+async function buildMetricDescriptionAccordion(dataImport){let tooltipDescription=await appendMetricDescriptionTooltip('#shield-db-component-3','accordion')
+d3.selectAll('.description-state-ban-metric-name-icon').on('mouseenter',showMetricDescriptionTooltip).on('mouseleave',hideMetricDescriptionTooltip)
+function showMetricDescriptionTooltip(event,datum){let thisNode=d3.select(this).node()
+let thisMetric=d3.select(thisNode.parentNode).select('.description-state-ban-metric-name-label').text().trim()
+tooltipDescription.style('opacity','1')
+let component3BB=d3.select('#shield-db-component-3').node().getBoundingClientRect()
+let tooltipDescriptionWidth=tooltipDescription.node().getBoundingClientRect().width
+let tooltipX;let tooltipY;if(window.innerWidth<600){tooltipX=window.innerWidth/2.2-tooltipDescriptionWidth/2
+tooltipY=thisNode.getBoundingClientRect().top+window.scrollY+7}else{if(event.pageX<window.innerWidth/2){tooltipX=thisNode.getBoundingClientRect().x+8}else{tooltipX=thisNode.getBoundingClientRect().x-tooltipDescriptionWidth+5}
+tooltipY=thisNode.getBoundingClientRect().top+window.scrollY+5}
+tooltipDescription.style("transform",`translate(
+          ${tooltipX}px,
+          ${tooltipY}px)
+    `)
+let data=dataImport.filter(dataset=>{return dataset[0].metric_name.replaceAll('  ',' ').trim()===thisMetric.replaceAll('  ',' ')})[0]
+let tooltipDescriptionMetricName=tooltipDescription.select('.main-description-accordion-tooltip-metric-name').text(data[0].metric_name)
+let tooltipDescriptionMetricDescription=tooltipDescription.select('.main-description-accordion-tooltip-description').text(data[0].metric_description.replace(/- Categories(.*)/,''))
+let tooltipDescriptionSource=tooltipDescription.select('.main-description-accordion-tooltip-source').text(`Source: ${data[0].source}`)}
+function hideMetricDescriptionTooltip(){tooltipDescription.style('opacity','0')}}
+async function openCloseAccordion(dataImport,accordionQueue){d3.selectAll('.description-state-name-container').on('click',toggleGeoDescription)
+async function toggleGeoDescription(){let openMoreContainer=d3.select(this).select('.open-more-container')
+let thisGeo=openMoreContainer.attr('id').replaceAll('open-more-container-','')
+let nodeStatus=openMoreContainer.select('p').text()
+if(nodeStatus==='See less'){let label=openMoreContainer.select('p').text('See more').style('padding-left','1.7px')
+let icon=openMoreContainer.select('span').text('add_circle')
+let container=d3.select(`#description-state-content-container-${thisGeo}`).style('height','0')
+d3.select(`#description-state-bar-plot-canvas-${thisGeo}`).remove()
+accordionQueue.remove(container)}else if(nodeStatus==='See more'){let label=openMoreContainer.select('p').text('See less').style('padding-left','9px')
+let icon=openMoreContainer.select('span').text('do_not_disturb_on')
+let container=d3.select(`#description-state-content-container-${thisGeo}`).style('height','fit-content')
+let geoContentContainer=d3.select(`#description-state-content-container-${thisGeo}`)
+if(geoLevel==='us_state'){await makeBars(dataImport,geoContentContainer)}
+accordionQueueUpdate(accordionQueue,geoContentContainer)}}}
+async function tocOpenAccordion(dataImport,accordionQueue){d3.selectAll('a.track_toc-item').on('click',tabToggleDescription)
+async function tabToggleDescription(){let thisGeo=d3.select(this).text().replaceAll("'",'').replaceAll(' ','-')
+await openByGeo(thisGeo,dataImport,accordionQueue)}}
+async function openByGeo(thisGeo,dataImport,accordionQueue){thisGeo=capitalizeText(thisGeo,'-')
+let openMoreButton;let openMoreNode;try{openMoreButton=d3.select(`#open-more-container-${thisGeo}`)
+openMoreNode=openMoreButton.node()}catch{}
+if(openMoreNode!==undefined&openMoreNode!==null){let nodeStatus=openMoreButton.select('p').text()
+if(nodeStatus=='See more'){let label=openMoreButton.select('p').text('See less').style('padding-left','9px')
+let icon=openMoreButton.select('span').text('do_not_disturb_on')
+let container=d3.select(`#description-state-content-container-${thisGeo}`).style('height','fit-content')
+let geoContentContainer=d3.select(`#description-state-content-container-${thisGeo}`)
+if(geoLevel==='us_state'){await makeBars(dataImport,geoContentContainer)}
+accordionQueueUpdate(accordionQueue,geoContentContainer)}}}
+async function anchorMapAccordion(tagLevel,dataImport,accordionQueue){d3.selectAll(tagLevel).on('click',openAccordion)
+async function openAccordion(){let thisElement=d3.select(this)
+let thisGeo=thisElement.attr('id').replace('map-','').replaceAll("'",'').replaceAll(' ','-')
+let openMoreButton;let openMoreNode=null
+try{openMoreButton=d3.select(`#open-more-container-${thisGeo}`)
+openMoreNode=openMoreButton.node()}catch{}
+if(openMoreNode!==null){let nodeStatus=openMoreButton.select('p').text()
+if(nodeStatus==="See more"){let label=openMoreButton.select('p').text('See less').style('padding-left','9px')
+let icon=openMoreButton.select('span').text('do_not_disturb_on')
+let container=d3.select(`#description-state-content-container-${thisGeo}`).style('height','fit-content')
+let geoContentContainer=d3.select(`#description-state-content-container-${thisGeo}`)
+if(geoLevel==='us_state'){await makeBars(dataImport,geoContentContainer)}
+accordionQueueUpdate(accordionQueue,geoContentContainer)}}}}

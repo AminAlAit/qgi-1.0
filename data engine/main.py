@@ -4,10 +4,15 @@
 import countriesIndex as ci
 import patternEngine  as pe
 
+#dataPrepDir = r"C:\Users\Amin\Desktop\trojan\trojan\data engine"
+#dataBank    = r"C:\Users\Amin\Desktop\trojan\trojan\data bank"
+#projectPath = r"C:\Users\Amin\Desktop\trojan"
+
 def main():
     ci.countriesInit()
     ## Main Input
-    path = r"C:\Users\NEW\Desktop\Trojan Geopolitics\data engine\Trojan Geopolitics\Indexes\Numbeo\Quality of Life\Quality of Life.csv"
+    path = r"C:\Users\Amin\Desktop\trojan\trojan\Numbeo\Cost of Living\Cost of Living Index.csv"
+    outp = r"C:\Users\Amin\Desktop\trojan\trojan\Numbeo\Cost of Living\\"
 
     ## Find pattern between 2 time countries only
     #patternLen = 5
@@ -20,7 +25,7 @@ def main():
     ### Find common patterns among an entire CSV    
     patternInterval = [3, 4, 5, 6, 7, 8, 9, 10]
     dropCols        = []
-    res             = pe.findAllPatterns(path, dropCols, patternInterval, fixYears = [".01", ".06"]) 
+    res             = pe.findAllPatterns(path, outp, dropCols, patternInterval, fixYears = [".01", ".06"]) 
     pattsDF         = res[0]
     if len(res) > 1:
         dumpDF = res[1]

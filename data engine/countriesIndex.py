@@ -1,3 +1,7 @@
+import subprocess
+import sys
+subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
+
 from datetime import datetime, time, date
 import matplotlib.pyplot as plt
 import pandas            as pd
@@ -7,8 +11,8 @@ import requests
 import json
 
 countriesReference = "https://raw.githubusercontent.com/flyingcircusio/pycountry/main/src/pycountry/databases/iso3166-1.json"
-countriesCSVFolder = r"C:\Users\Amin\Desktop\trojan\trojan\countries"
-countriesCSVPath   = r"C:\Users\Amin\Desktop\trojan\trojan\countries\countries.csv"
+countriesCSVFolder = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\countries"
+countriesCSVPath   = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\countries\countries.csv"
 
 def countriesInit():
     dictt      = json.loads(requests.get(countriesReference).text)

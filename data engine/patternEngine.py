@@ -1,4 +1,5 @@
-from  collections       import Counter
+from collections        import Counter
+from datetime           import datetime as dt
 import patternValidator as pv
 import countriesIndex   as ci
 import patternFinder    as pf
@@ -10,22 +11,27 @@ import pickle
 import viz
 import os
 
-countriesFolderPath   = "C:\\Users\\Amin\\Desktop\\trojan\\trojan\\countries patterns\\"
-countriesPatternsPath = r"C:\Users\Amin\Desktop\trojan\trojan\countries patterns\\"
-projectPath           = r"C:\Users\Amin\Desktop\trojan"
-showcasePath          = r"C:\Users\Amin\Desktop\trojan\trojan\showcase\\"
+#countriesFolderPath   = r"C:\Users\Amin\Desktop\trojan\trojan\countries patterns\\"
+countriesPatternsPath = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\countries patterns\\"
+projectPath           = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan"
+showcasePath          = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\showcase"
 
 def engine(patternize:   bool = True, filter:       bool = True, 
            refine:       bool = True, sortPatterns: bool = True, 
            showcaseCond: bool = True, csvConvert:   bool = True):
-    
+
     if patternize:
-        freshCutIndexes = dp.getFreshCutIndexes()
-        for freshCutIndex in freshCutIndexes:
-            res = patternizeThisIndex(indexPath = freshCutIndex)
-            print("$$$$$$$$$$$ ", freshCutIndex.split("\\")[-1], " $$$$$$$$$$$")
-            print("Duration: ", str(res[-1]))
-            print("$$$$$$$$$$$ ", freshCutIndex.split("\\")[-1], " $$$$$$$$$$$")
+        ## consulting index_stocker.csv on which indexes to patternize, this deicision will be he list variable `candidates`
+        candidates = dp.get_candidate_indexes()
+
+        for candidatePath in candidates:
+            indexName = candidatePath.split("\\")[-1]
+            res       = patternizeThisIndex(indexPath = candidatePath)
+            dp.set_patternized_status_of_this_index(candidatePath, True)
+            dp.set_last_updated_datetime_of_this_index(candidatePath, dt.now())
+            print("$$$$$$$$$$$ ", indexName, " $$$$$$$$$$$")
+            print("Duration: ",   str(res[-1]))
+            print("$$$$$$$$$$$ ", indexName, " $$$$$$$$$$$")
     
     if filter:
         ## Country Filter
@@ -44,7 +50,7 @@ def engine(patternize:   bool = True, filter:       bool = True,
         # Refining the separate country dataframes into dictionaries
         for country in os.listdir(countriesPatternsPath):
             country = country.split("_")[0]
-            df      = pd.read_csv(countriesFolderPath + country + "_PATTERNS_DF.csv").drop("Unnamed: 0", axis = 1)
+            df      = pd.read_csv(countriesPatternsPath + country + "_PATTERNS_DF.csv").drop("Unnamed: 0", axis = 1)
 
             countryDict = {}
             for pattLen in list(set(df["Pattern Length"])):
@@ -69,7 +75,7 @@ def engine(patternize:   bool = True, filter:       bool = True,
                             countriesMatchIndexStartDF = countriesMatchDF[countriesMatchDF["Match Index Start"] == matchIndexStart]
                             countryDict[pattLen][pattIndexStart][countryMatch] = countriesMatchIndexStartDF
 
-            with open(countriesFolderPath + country + "_REFINED_DICT.pkl", "wb") as f:
+            with open(countriesPatternsPath + country + "_REFINED_DICT.pkl", "wb") as f:
                 pickle.dump(countryDict, f)
 
     if sortPatterns:
@@ -79,6 +85,7 @@ def engine(patternize:   bool = True, filter:       bool = True,
         showcase(allSortedPatterns = allSortedPatterns)
     
     ## Converting to CSVs
+    ## This is where we create "allSortedPatterns.csv" and "allSortedPatternsShowcase.csv"
     if csvConvert:
         dp.patternsPickleToCSV()
 
@@ -133,6 +140,9 @@ def patternizeThisIndex(indexPath: str,
                         patternInterval: list = [3, 4, 5, 6, 7, 8, 9, 10], 
                         dropCols: list        = [], 
                         fixYears: list        = [".01", ".06"]):
+    print("Index name: ")
+    print(indexPath.split("\\")[-1])
+
     ci.countriesInit()
     outputPath = dp.getOutputDir(indexPath)
     res     = findAllPatterns(indexPath, outputPath, dropCols, patternInterval, fixYears = fixYears) 

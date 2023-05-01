@@ -4,15 +4,11 @@
 import countriesIndex as ci
 import patternEngine  as pe
 
-#dataPrepDir = r"C:\Users\Amin\Desktop\trojan\trojan\data engine"
-#dataBank    = r"C:\Users\Amin\Desktop\trojan\trojan\data bank"
-#projectPath = r"C:\Users\Amin\Desktop\trojan"
-
 def main():
     ci.countriesInit()
     ## Main Input
-    path = r"C:\Users\Amin\Desktop\trojan\trojan\Numbeo\Cost of Living\Cost of Living Index.csv"
-    outp = r"C:\Users\Amin\Desktop\trojan\trojan\Numbeo\Cost of Living\\"
+    path = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\data bank\Cost of Living\Numbeo\Cost of Living Index.csv"
+    outp = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\data bank\Cost of Living\Numbeo\\"
 
     ## Find pattern between 2 time countries only
     #patternLen = 5

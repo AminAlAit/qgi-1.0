@@ -1,13 +1,13 @@
-import sys
-sys.path.insert(1, r"C:\Users\Amin\Desktop\trojan\trojan-streamlit")
-import trojan as tr
-
 from itertools import groupby, islice
 from datetime import datetime as dt
+import matplotlib.pyplot      as plt
 import pandas                 as pd
 import numpy                  as np
 import patternEngine          as pe
+import platform
+import pathlib
 import pickle
+import math
 import ast
 import os 
 
@@ -15,10 +15,270 @@ import os
 #otherCountryIndex = list(otherCountryDF.index)[0]
 #country_12        = otherCountryDF["Pattern Country"]
 
-countriesPatternsPath = r"C:\Users\Amin\Desktop\trojan\trojan\countries patterns\\"
-countriesFolderPath   = "C:\\Users\\Amin\\Desktop\\trojan\\trojan\\countries patterns\\"
-countriesCSVPath      = r"C:\Users\Amin\Desktop\trojan\trojan\countries\countries.csv"
-showcasePath          = r"C:\Users\Amin\Desktop\trojan\trojan\showcase\\"
+countriesPatternsPath           = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\countries patterns\\"
+#countriesFolderPath             = r"C:\Users\Amin\Desktop\trojan\trojan\countries patterns\\"
+countriesCSVPath                = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\countries\countries.csv"
+showcasePath                    = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\showcase"
+trojanPath                      = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan"
+dataBankPath                    = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\data bank"
+
+stocker_indexes_path            = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\stockers\index_stocker.csv"
+checkersIndexPath               = r"C:\Users\NEW\Desktop\Projects\FIFADash\trojan\checkers\indexes.csv"
+
+allSortedPatternsPickle         = r"C:\Users\Amin\Desktop\trojan\trojan\countries patterns\allSortedPatterns.pickle"
+allSortedPatternsShowcasePickle = r"C:\Users\Amin\Desktop\trojan\trojan\showcase\allSortedPatternsShowcase.pkl"
+
+SINGLE_SUB_VALIDATE_ESSENTIAL_COLS = ["Year", "Country"]
+SIGNLE_SUB_VALIDATE_NB_ROWS        = 10
+SINGLE_SUB_VALIDATE_NB_COLS        = 3
+
+#################################################################
+################# Index Candidates & Diagnosis ##################
+#################################################################
+def get_candidates_percentage():
+    df      = get_index_stocker()
+    Trues   = 0
+    Falsies = 0
+    NaNs    = 0
+    labels  = ["Up to date", "Out of date", "Legacy"]
+
+    for i in list(df["Patternized"]):
+        if i == True:
+            Trues += 1
+        elif i == False:
+            Falsies += 1
+        elif math.isnan(i):
+            NaNs += 1
+
+    values = [Trues, Falsies, NaNs]
+    colors = ['#8EB897', '#4F6272', '#DD7596']
+
+    # Use it thanks to the color argument
+    return plt.pie(values, labels = labels, labeldistance = 1.15, wedgeprops = {"linewidth" : 1, "edgecolor" : "white"}, colors = colors);
+
+
+def get_index_stocker():
+    return pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+
+
+def add_index_to_stocker(indexPath: str):
+    df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+    if indexPath == "":
+        return 0
+    elif indexPath in list(df["Path"]):
+        return 1
+    else:
+        df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+        indexes     = list(df["Index"])
+        patternized = list(df["Patternized"])
+        last_update = list(df["Last Updated"])
+        paths       = list(df["Path"])
+
+        indexes.append(indexPath.split("\\")[-1])
+        patternized.append(False)
+        last_update.append(get_modification_date(indexPath))
+        paths.append(indexPath)
+        
+        new_index_stocker                 = pd.DataFrame()
+        new_index_stocker["Index"]        = indexes
+        new_index_stocker["Patternized"]  = patternized
+        new_index_stocker["Last Updated"] = last_update
+        new_index_stocker["Path"]         = paths
+        new_index_stocker.to_csv(stocker_indexes_path)
+
+        return new_index_stocker
+    
+
+def remove_index_from_stocker(indexName: str):
+    df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+    if indexName == "":
+        return 0
+    elif indexName not in list(df["Index"]):
+        return 1
+    else:
+        df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+        df = df[df["Index"] != indexName]
+        df.to_csv(stocker_indexes_path)
+        return df
+    
+
+def index_name_in_stocker(indexName: str):
+    if indexName == "":
+        return {}
+    else:
+        df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+        if indexName in list(df["Index"]):
+            return True
+        else:
+            return False
+        
+
+def get_patternized_status_of_this_index(indexName: str):
+    df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+    if indexName == "":
+        return 0
+    elif indexName not in list(df["Index"]):
+        return 1
+    else:
+        return df.iloc[list(df["Index"]).index(indexName), 1]
+
+
+def set_patternized_status_of_this_index(indexPath: str, status):
+    df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+    if indexPath == "":
+        return 0
+    elif indexPath not in list(df["Path"]):
+        return 1
+    else:
+        df.iloc[list(df["Path"]).index(indexPath), 1] = status
+        df.to_csv(stocker_indexes_path)
+        return df
+    
+def set_last_updated_datetime_of_this_index(indexPath: str, date_time):
+    df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+    if indexPath == "":
+        return 0
+    elif indexPath not in list(df["Path"]):
+        return 1
+    else:
+        df.iloc[list(df["Path"]).index(indexPath), 2] = date_time
+        df.to_csv(stocker_indexes_path)
+        return df
+
+
+def get_last_update_stocker(indexName: str):
+    df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+    if indexName == "":
+        return 0
+    elif indexName not in list(df["Index"]):
+        return 1
+    else:
+        return df.iloc[list(df["Index"]).index(indexName), 2]
+
+
+def get_path_of_this_index(indexName: str):
+    df = pd.read_csv(stocker_indexes_path).drop("Unnamed: 0", axis = 1)
+    if indexName == "":
+        return 0
+    elif indexName not in list(df["Index"]):
+        return 1
+    else:
+        return df.iloc[list(df["Index"]).index(indexName), 3]
+
+
+def get_creation_date(path_to_file):
+    """
+    Try to get the date that a file was created, falling back to when it was
+    last modified if that isn't possible.
+    See http://stackoverflow.com/a/39501288/1709587 for explanation.
+    """
+    time = np.nan
+    if platform.system() == "Windows":
+        time = os.path.getctime(path_to_file)
+    else:
+        stat = os.stat(path_to_file)
+        try:
+            time = stat.st_birthtime
+        except AttributeError:
+            # We're probably on Linux. No easy way to get creation dates here,
+            # so we'll settle for when its content was last modified.
+            time = stat.st_mtime
+    
+    return dt.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def get_modification_date(path_to_file):
+    """
+    Try to get the date that a file was last modified.
+    See http://stackoverflow.com/a/39501288/1709587 for explanation.
+    """
+    time = np.nan
+    if platform.system() == "Windows":
+        time = os.path.getmtime(path_to_file)
+    else:
+        stat = os.stat(path_to_file)
+        try:
+            time = stat.st_birthtime
+        except AttributeError:
+            # We're probably on Linux. No easy way to get creation dates here,
+            # so we'll settle for when its content was last modified.
+            time = stat.st_mtime
+    
+    return dt.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def get_uncommon_list_items(l1, l2):
+    uncommon = []
+    for i in l1:
+        if i not in l2:
+            uncommon.append(i)
+
+    return uncommon
+
+
+def check_two_list_equivalence(l1: list, l2: list):
+    return set(l1) == set(l2)
+
+
+def diagnose_indexes_between_stocker_and_fresh(stocker_indexes, fresh_indexes):
+    new_in_stocker = get_uncommon_list_items(stocker_indexes, fresh_indexes)
+    new_in_fresh   = get_uncommon_list_items(fresh_indexes, stocker_indexes)
+
+    # We have new fresh indexes
+    if len(new_in_fresh) > 0:
+        for new_index in new_in_fresh:
+            add_index_to_stocker(new_index)
+
+    # We have new stocker index that are NOT in fresh: WE LOST INDEX PATHS, OR INDEX PATHS HAVE MOVED/BEEN EDITED
+    if len(new_in_stocker) > 0:
+        must_check_indexes = pd.DataFrame()
+        must_check_indexes["Checker Index Path"] = new_in_stocker
+        must_check_indexes.to_csv(checkersIndexPath)
+
+        print("/////////////////////////////////////////////////")
+        print("Caution: must check the status of these indexes: ")
+        print(new_in_stocker)
+        print("-----------")
+        print("Check whether we lost their paths in the folders' structure of the data bank folder. They might have been moved or edited. ")
+        print("/////////////////////////////////////////////////")
+
+
+def get_candidate_indexes(run_index_path_diagnosis: bool = True):
+    stocker_indexes = get_index_stocker()["Path"]
+    fresh_indexes   = getFreshCutIndexes()
+
+    # Running a quick diagnosis for both our index lists.
+    if run_index_path_diagnosis:
+        diagnose_indexes_between_stocker_and_fresh(stocker_indexes, fresh_indexes)
+
+    # find index candidates based on patternized status and creation dates
+    df         = get_index_stocker()
+    candidates = []
+
+    # Combnining them with paths of indexes who's been patternized but their stocker's last modification date is outdated 
+    # with respect to fresh's list
+    patternized_indexes = df[df["Patternized"] == True]
+    for lu in range(len(list(patternized_indexes["Last Updated"]))):
+        # Getting the last modification date as registered in index_stocker.csv
+        stocker_index_date = patternized_indexes.iloc[lu, 2]
+        
+        # Getting the real last modification date of that same index
+        fresh_index_date   = get_modification_date(patternized_indexes.iloc[lu, 3])
+        
+        # Checking if our indexes have been updated
+        if stocker_index_date < fresh_index_date:
+            # Setting the patternized status to False for each index that is out of date. 
+            # That way we label it ready to be patternized
+            set_patternized_status_of_this_index(patternized_indexes.iloc[lu, 3], False)
+            print("Index '", patternized_indexes.iloc[lu, 3].split("\\")[-1], "' is outdated. ")
+            print("Its 'patternized' status was set to False. ")
+
+    # Getting paths of un-patternized indexes
+    for j in list(df[df["Patternized"] != True]["Path"]):
+        print("New index candidate found: '", j.split("\\")[-1], "'")
+        candidates.append(j)
+
+    return candidates
 
 #################################################################
 ########################## Viz & EDA ############################
@@ -103,6 +363,20 @@ def sortDFsInList(l: list, atLeastLength: int = 2):
     return sorted
 
 #################################################################
+########################### Pickles #############################
+#################################################################
+
+def openPickle(path):
+    with open(path, "rb") as handle:
+        return pickle.load(handle)
+
+def getPatternPickles():
+    if "C:\\" in str(pathlib.Path().resolve()):
+        return [allSortedPatternsPickle, allSortedPatternsShowcasePickle]
+    else:
+        return [allSortedPatternsPickle.split("\\")[-1], allSortedPatternsShowcasePickle.split("\\")[-1]]
+
+#################################################################
 ########################### Patterns ############################
 #################################################################
 def getAllSortedPatterns(atLeastLength: int = 2, pickleUp = True):
@@ -151,7 +425,7 @@ def getCountryMatches(countryName: str = None, pattStart: int = None, pattEnd:  
     if countryName is None:
         return "Please specify `countryName`. "
 
-    with open(countriesFolderPath + countryName + "_REFINED_DICT.pkl", "rb") as f:
+    with open(countriesPatternsPath + countryName + "_REFINED_DICT.pkl", "rb") as f:
         countryDict = pickle.load(f)
     
     if len(countryDict) > 0:
@@ -348,13 +622,13 @@ def pickleToDF(pickledDict: dict = None):
     return df
 
 def patternsPickleToCSV():
-    patternsDictPath, patternsShowcaseDictPath = tr.getPatternPickles()
+    patternsDictPath, patternsShowcaseDictPath = getPatternPickles()
 
-    patternsDict         = tr.openPickle(patternsDictPath)
+    patternsDict         = openPickle(patternsDictPath)
     patternsDF           = pickleToDF(patternsDict)
     patternsDF.to_csv(countriesPatternsPath + "allSortedPatterns.csv")
 
-    patternsShowcaseDict = tr.openPickle(patternsShowcaseDictPath)
+    patternsShowcaseDict = openPickle(patternsShowcaseDictPath)
     patternsShowcaseDF   = pickleToDF(patternsShowcaseDict)
     patternsShowcaseDF.to_csv(showcasePath + "allSortedPatternsShowcase.csv")
 #################################################################
@@ -446,7 +720,7 @@ def countryFilter(index_PATTERNS_csv: pd.DataFrame, output_dir: str) -> None:
 ########################### Paths ###############################
 #################################################################
 
-def getPatternizedIndexPaths(projectPath: str = r"C:\Users\Amin\Desktop\trojan") -> list:
+def getPatternizedIndexPaths(projectPath: str = trojanPath) -> list:
     patternizedIndexes = []
     for root, dirs, files in os.walk(projectPath):
         for file in files:
@@ -454,15 +728,29 @@ def getPatternizedIndexPaths(projectPath: str = r"C:\Users\Amin\Desktop\trojan")
                 patternizedIndexes.append(os.path.join(root, file))
     return patternizedIndexes
 
-def getFreshCutIndexes(dataBankPath: str = r"C:\Users\Amin\Desktop\trojan\trojan\data bank"):
+def getFreshCutIndexes(dataBankPath: str = dataBankPath):
     freshCutIndexes = []
     for root, dirs, files in os.walk(dataBankPath):
         for file in files:
-            if not file.endswith("PATTERNS_DF.csv") and not file.endswith("DUMPED_COUNTRIES.csv"): 
-                if not ".git" in os.path.join(root, file) and file.endswith(".csv"):
+            ## Ignore every file that ends with 'PATTERNS_DF.csv'
+            if not file.endswith("PATTERNS_DF.csv"): 
+                ## Ignore every file that ends with 'DUMPED_COUNTRIES.csv'
+                if not file.endswith("DUMPED_COUNTRIES.csv"):
+                    ## Ignore all sources with "MAIN" in them
                     if not "MAIN" in os.path.join(root, file):
+                        ## Ignore anyting from the directory "[SOURCES]"
                         if not "[SOURCES]" in os.path.join(root, file):
-                            freshCutIndexes.append(os.path.join(root, file))
+                            ## Making sure '.git', nor the files in it, is/are not included in the search
+                            if not ".git" in os.path.join(root, file):
+                                ## And file must end exclusively end with a '_SINGLE_SUB.csv'
+                                if file.endswith("_SINGLE_SUB.csv"):
+                                    ## Now we validate the single sub index in 4 simple steps
+                                    df = pd.read_csv(str(os.path.join(root, file)))
+                                    if SINGLE_SUB_VALIDATE_ESSENTIAL_COLS[0] in list(df):
+                                        if SINGLE_SUB_VALIDATE_ESSENTIAL_COLS[1] in list(df):
+                                            if len(list(df)) >= SINGLE_SUB_VALIDATE_NB_COLS:
+                                                if len(df) >= SIGNLE_SUB_VALIDATE_NB_ROWS:
+                                                    freshCutIndexes.append(os.path.join(root, file))
 
     return freshCutIndexes
 

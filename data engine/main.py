@@ -4,15 +4,11 @@
 import countriesIndex as ci
 import patternEngine  as pe
 
-#dataPrepDir = r"/workspace/qgi\trojan\data engine"
-#dataBank    = r"/workspace/qgi\trojan\data bank"
-#projectPath = r"/workspace/qgi"
-
 def main():
     ci.countriesInit()
     ## Main Input
-    path = r"/workspace/qgi\trojan\Numbeo\Cost of Living\Cost of Living Index.csv"
-    outp = r"/workspace/qgi\trojan\Numbeo\Cost of Living\\"
+    path = r"/workspace/data\trojan\data bank\Cost of Living\Numbeo\Cost of Living Index.csv"
+    outp = r"/workspace/data\trojan\data bank\Cost of Living\Numbeo\\"
 
     ## Find pattern between 2 time countries only
     #patternLen = 5

@@ -18,7 +18,9 @@ st.write("""# Trojan Geopolitics""")
 
 
 #### Data Prep
-patterns, patternsShowcase = tr.getPatternDFs()
+# patterns, patternsShowcase = tr.getPatternDFs()
+patterns = tr.getPatternDFs()[1]
+
 
 sorted_countries_A = np.sort(patterns['Pattern Country'].unique())
 sorted_countries_B = np.sort(patterns['Match Country'].unique())

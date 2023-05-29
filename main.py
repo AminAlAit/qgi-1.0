@@ -128,13 +128,13 @@ else:
     
     if not country_b_bool:
         st.write(country_A_filter + """ does not have any pattern with """ + country_B_filter + """. """)
-        st.write("""----Please select another pattern length. """)
+        st.write("""---- Please select another pattern length. """)
     if not pattern_length_bool:
         if not country_b_bool:
             st.write(country_A_filter + """ does not have any pattern with length """ + str(pattern_length_filter[0])) 
-            st.write("""----Please select another pattern length. """)
+            st.write("""---- Please select another pattern length. """)
         else:
             st.write(country_A_filter + """ and """ + country_B_filter + """ do not have a pattern of length """ + str(pattern_length_filter[0]))
-            st.write("""----Please select another pattern length. """)
+            st.write("""---- Please select another pattern length. """)
     if not correlation_bool:
         st.write("""The pattern between """ + country_A_filter + """ and """ + country_B_filter + """ has no indexes pass the correlation threshold. """)

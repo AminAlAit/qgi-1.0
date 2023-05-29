@@ -1,9 +1,9 @@
-#import pathlib
-#import sys
-#sys.path.insert(1, r"/workspace/qgi\trojan\data engine")
-#import dataPrep  as dp
-#tr.install(["streamlit"])
-import matplotlib.pyplot as plt
+# import pathlib
+# import sys
+# sys.path.insert(1, r"/workspace/qgi\trojan\data engine")
+# import dataPrep  as dp
+# tr.install(["streamlit"])
+# import matplotlib.pyplot as plt
 import streamlit         as st
 import trojan            as tr
 import pandas            as pd

@@ -97,7 +97,7 @@ if filtered_bool:
     ## Display vizable pattern dataframe
     #st.dataframe(tr.patternVsMatcheDF(filtered_df))
 
-    st.write(country_A_filter + """ and """ + country_B_filter + """ have a pattern of length """ + str(pattern_length_filter[0]) + """ years and strength of """ + str(pattern_strength) + """indexes. """)
+    st.write(country_A_filter + """ and """ + country_B_filter + """ have a pattern of length """ + str(pattern_length_filter[0]) + """ years and strength of """ + str(pattern_strength) + """ indexes. """)
 
     col1, col2 = st.columns(2)
     j          = 0

@@ -2,17 +2,22 @@ import subprocess
 import sys
 subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
 
-from datetime import datetime, time, date
+from pathlib             import Path
+from datetime            import datetime, time, date
 import matplotlib.pyplot as plt
 import pandas            as pd
 import numpy             as np
 import dataPrep          as dp
 import requests
 import json
+import os
 
 countriesReference = "https://raw.githubusercontent.com/flyingcircusio/pycountry/main/src/pycountry/databases/iso3166-1.json"
+
 countriesCSVFolder = r"/workspace/data\trojan\countries"
 countriesCSVPath   = r"/workspace/data\trojan\countries\countries.csv"
+countriesCSVFolder = str(Path(os.path.dirname(os.getcwd()))) + "\\trojan\\countries"
+countriesCSVPath   = str(Path(os.path.dirname(os.getcwd()))) + "\\trojan\\countries\countries.csv"
 
 def countriesInit():
     dictt      = json.loads(requests.get(countriesReference).text)
